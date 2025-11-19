@@ -7,16 +7,16 @@ use stdClass;
 
 class UserRepository
 {
-    public function findByUsername(string $username): ?stdClass
+    public function findBynip(string $nip): ?stdClass
     {
-        return DB::selectOne("SELECT * FROM MASTER_USER WHERE username = ?", [$username]);
+        return DB::selectOne("SELECT * FROM MASTER_USER WHERE nip = ?", [$nip]);
     }
 
-    public function updateToken(int $id_user, string $token): bool
+    public function updateToken(int $nip, string $token): bool
     {
         $affectedRows = DB::update(
-            "UPDATE MASTER_USER SET token = ? WHERE id_user = ?",
-            [$token, $id_user]
+            "UPDATE MASTER_USER SET token = ? WHERE nip = ?",
+            [$token, $nip]
         );
         return $affectedRows > 0;
     }

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Helper\Response;
 use App\Repositories\UserRepository;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +14,7 @@ class AuthService
 
     public function login(array $credentials): array
     {
-        $user = $this->userRepository->findByUsername($credentials['username']);
+        $user = $this->userRepository->findBynip($credentials['nip']);
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return [
@@ -41,13 +40,13 @@ class AuthService
             'iss' => url('/'),           
             'iat' => $issuedAt,          
             'exp' => $expireAt,          
-            'sub' => $user->id_user,     
-            'username' => $user->username
+            'sub' => $user->nip,     
+            'nip' => $user->nip
         ];
 
         $jwtToken = JWT::encode($payload, $secretKey, 'HS256');
 
-        $this->userRepository->updateToken($user->id_user, $jwtToken);
+        $this->userRepository->updateToken($user->nip, $jwtToken);
 
         return [
             'status' => true,
