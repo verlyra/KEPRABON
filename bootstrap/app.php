@@ -15,8 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
-
-        //
+        $middleware->alias([
+            'tokenValidator' => \App\Http\Middleware\ValidateApiToken::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

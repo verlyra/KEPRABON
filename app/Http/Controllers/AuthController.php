@@ -20,7 +20,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string',
+            'nip' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -38,8 +38,8 @@ class AuthController extends Controller
         $expiresInSeconds = $loginData['expires_in'];
 
         $cookiePayload = [
-            'id_user' => $user->id_user,
-            'username' => $user->username,
+            'nip' => $user->nip,
+            'nama' => $user->nama,
             'token' => $token,
         ];
         
