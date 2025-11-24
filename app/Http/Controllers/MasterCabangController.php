@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Helper\Response;
 use App\Services\MasterCabangService;
 
+use Illuminate\Support\Facades\Validator;
+
+
 class MasterCabangController extends Controller
 {
     protected MasterCabangService $MasterCabangService;
