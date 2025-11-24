@@ -5,3 +5,12 @@ lalu buat logika di service
 semuanya harus di validate
 klo udah semua, lanjut buat routes lagi
 setiap nambah routes di api.php, selalu cmd php artisan optimize
+
+github push tutorial:
+1. buka sourrce control
+2. Tambah file yang di update
+3. buat commit message, lalu commit
+4. sync changes
+5. buka github, lalu pull request dari branch verly ke main
+6. ajukan merge
+7. acc merge
