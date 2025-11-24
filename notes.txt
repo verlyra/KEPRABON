@@ -1,0 +1,7 @@
+Bikin routes di api.php
+Bikin controller dengan cmd php artisan make:controller NamaController
+Trus bikin repository buat querynya
+lalu buat logika di service
+semuanya harus di validate
+klo udah semua, lanjut buat routes lagi
+setiap nambah routes di api.php, selalu cmd php artisan optimize
