@@ -22,4 +22,22 @@ Route::middleware(['tokenValidator'])->group(function () {
     Route::prefix('statistic')->group(function () {
         //isi statistic
     });
+    
+    Route::prefix('master')->group(function () {
+        Route::prefix('cabang')->group(function () {
+            Route::get('/list', [\App\Http\Controllers\MasterCabangController::class, 'list']);
+            Route::post('/store', [\App\Http\Controllers\MasterCabangController::class, 'store']);
+            Route::put('/update', [\App\Http\Controllers\MasterCabangController::class, 'update']);
+            Route::delete('/delete', [\App\Http\Controllers\MasterCabangController::class, 'delete']);
+        });
+        Route::prefix('tipe-penjualan')->group(function () {
+        //isi statistic
+        });
+        Route::prefix('pembayaran')->group(function () {
+        //isi statistic
+        });Route::prefix('items')->group(function () {
+        //isi statistic
+        });
+    }); 
+       
 });
