@@ -57,4 +57,11 @@ class AuthService
             ]
         ];
     }
+
+    public function logout(string $nip): bool
+    {
+        $this->userRepository->clearToken($nip);
+
+        return true;
+    }
 }
