@@ -47,4 +47,15 @@ class AuthController extends Controller
 
         return Response::success(null, 'Berhasil Login')->withCookie($cookie);
     }
+
+    public function logout(Request $request)
+    {
+        $user = $request->attributes->get('auth_user');
+        
+        $logout = $this->authService->logout($user->nip);
+
+        return Response::success(null, 'Logout success')
+        ->withCookie(cookie()->forget('token_sekredoktoral'))
+        ->withCookie(cookie()->forget('user_sekredoktoral'));
+    }
 }

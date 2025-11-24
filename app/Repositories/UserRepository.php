@@ -20,4 +20,9 @@ class UserRepository
         );
         return $affectedRows > 0;
     }
+
+    public function clearToken(string $nip): bool
+    {
+        return DB::update("UPDATE MASTER_USER SET token = NULL where nip = ?", [$nip]);
+    }
 }
