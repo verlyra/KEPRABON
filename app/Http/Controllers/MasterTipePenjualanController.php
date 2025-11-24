@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use App\Helper\Response;
 use App\Services\MasterTipePenjualanService;
 
+use Illuminate\Support\Facades\Validator;
+
+
 class MasterTipePenjualanController extends Controller
 {
     protected MasterTipePenjualanService $MasterTipePenjualanService;
-    
+
     public function __construct(MasterTipePenjualanService $MasterTipePenjualanService)
     {
         $this->MasterTipePenjualanService = $MasterTipePenjualanService;
