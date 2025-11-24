@@ -8,6 +8,8 @@ use App\Services\MasterTipePenjualanService;
 
 class MasterTipePenjualanController extends Controller
 {
+    protected MasterTipePenjualanService $MasterTipePenjualanService;
+    
     public function __construct(MasterTipePenjualanService $MasterTipePenjualanService)
     {
         $this->MasterTipePenjualanService = $MasterTipePenjualanService;
