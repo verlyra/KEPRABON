@@ -8,7 +8,7 @@ use App\Services\MasterPembayaranService;
 use Illuminate\Support\Facades\Validator;
 
 
-class MasterPembayaran extends Controller
+class MasterPembayaranController extends Controller
 {
     protected MasterPembayaranService $MasterPembayaranService;
 
