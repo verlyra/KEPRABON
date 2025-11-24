@@ -25,7 +25,10 @@ Route::middleware(['tokenValidator'])->group(function () {
             Route::delete('/delete', [\App\Http\Controllers\MasterCabangController::class, 'delete']);
         });
         Route::prefix('tipe-penjualan')->group(function () {
-        //isi statistic
+            Route::get('/list', [\App\Http\Controllers\MasterTipePenjualanController::class, 'list']);
+            Route::post('/store', [\App\Http\Controllers\MasterTipePenjualanController::class, 'store']);
+            Route::put('/update', [\App\Http\Controllers\MasterTipePenjualanController::class, 'update']);
+            Route::delete('/delete', [\App\Http\Controllers\MasterTipePenjualanController::class, 'delete']);
         });
         Route::prefix('pembayaran')->group(function () {
         //isi statistic
