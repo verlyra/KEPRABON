@@ -14,3 +14,9 @@ github push tutorial:
 5. buka github, lalu pull request dari branch verly ke main
 6. ajukan merge
 7. acc merge
+
+github pull: 
+1. git pull origin main
+2. composer i
+3. npm i
+4. npm run build
