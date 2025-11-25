@@ -19,9 +19,9 @@ class MasterUserService{
         return $this->MasterUserRepository->storeUser($nip, $nama, $password, $aktif);
     }
 
-    public function update(string $nip, string $nama, string $password, bool $aktif): bool
+    public function update(string $nip_old, string $nip_new, string $nama, string $password, bool $aktif): bool
     {
-        return $this->MasterUserRepository->updateUser($nip, $nama, $password, $aktif);
+        return $this->MasterUserRepository->updateUser($nip_old, $nip_new, $nama, $password, $aktif);
     }
 
     public function delete(string $nip): bool

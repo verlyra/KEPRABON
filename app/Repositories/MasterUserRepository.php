@@ -23,13 +23,13 @@ class MasterUserRepository
         );
     }
 
-    public function updateUser(string $nip, string $nama, string $password, bool $aktif): bool
+    public function updateUser(string $nip_old, string $nip_new, string $nama, string $password, bool $aktif): bool
     {
         $hashedPassword = Hash::make($password);
 
         return DB::update(
-            "UPDATE MASTER_USER SET nama = ?, password = ?, aktif = ? WHERE nip = ?",
-            [$nama, $hashedPassword, $aktif, $nip]
+            "UPDATE MASTER_USER SET nip = ?, nama = ?, password = ?, aktif = ? WHERE nip = ?",
+            [$nip_new, $nama, $hashedPassword, $aktif, $nip_old]
         );
     }
 
