@@ -36,7 +36,16 @@ Route::middleware(['tokenValidator'])->group(function () {
             Route::put('/update', [\App\Http\Controllers\MasterPembayaranController::class, 'update']);
             Route::delete('/delete', [\App\Http\Controllers\MasterPembayaranController::class, 'delete']);
         });Route::prefix('items')->group(function () {
-        //isi statistic
+            Route::get('/list', [\App\Http\Controllers\MasterItemsController::class, 'list']);
+            Route::post('/store', [\App\Http\Controllers\MasterItemsController::class, 'store']);
+            Route::put('/update', [\App\Http\Controllers\MasterItemsController::class, 'update']);
+            Route::delete('/delete', [\App\Http\Controllers\MasterItemsController::class, 'delete']);
+        });
+        Route::prefix('users')->group(function () {
+            Route::get('/list', [\App\Http\Controllers\MasterUserController::class, 'list']);
+            Route::post('/store', [\App\Http\Controllers\MasterUserController::class, 'store']);
+            Route::put('/update', [\App\Http\Controllers\MasterUserController::class, 'update']);
+            Route::delete('/delete', [\App\Http\Controllers\MasterUserController::class, 'delete']);
         });
     }); 
        
