@@ -20,3 +20,8 @@ github pull:
 2. composer i
 3. npm i
 4. npm run build
+
+Jika postman error, kita harus:
+1. php artisan optimize
+2. cek kesesuaian db
+3. cek routes di postman
