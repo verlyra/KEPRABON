@@ -17,7 +17,7 @@ The system manages financial transaction records, provides analytic dashboards, 
 
 For secure communication between frontend and backend, the REST API uses HMAC-SHA256 request signing, ensuring integrity and authentication during data exchange.
 
-This system was developed as part of a **Industrial Internship (KKP)** project.
+This system was developed as part of an **Industrial Internship (KKP)** project.
 
 ---
 
