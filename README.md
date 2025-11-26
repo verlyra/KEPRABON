@@ -37,7 +37,7 @@ This system was developed as part of an **Industrial Internship (KKP)** project.
 | Layer | Technology |
 |-------|-----------|
 | Backend | Laravel (PHP), REST API, HMAC-SHA256 |
-| Frontend | React.js + TypeScript, Fetch API |
+| Frontend | React.js + TypeScript, Axios |
 | Database | MySQL / Online DB |
 | Forecasting | Simple Exponential Smoothing (SES) |
 
