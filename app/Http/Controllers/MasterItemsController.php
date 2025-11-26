@@ -26,7 +26,7 @@ class MasterItemsController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_item' => 'required|string|max:255',
-            'harga_item' => 'required|float',
+            'harga_item' => 'required|numeric',
         ]);
 
         if ($validator->fails()) return Response::badRequest($validator->errors());
@@ -43,7 +43,7 @@ class MasterItemsController extends Controller
         $validator = Validator::make($request->all(), [
             'id_item' => 'required|integer',
             'nama_item' => 'required|string|max:255',
-            'harga_item' => 'required|float',
+            'harga_item' => 'required|numeric',
         ]);
 
         if ($validator->fails()) return Response::badRequest($validator->errors());
