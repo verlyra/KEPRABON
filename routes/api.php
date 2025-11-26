@@ -47,6 +47,9 @@ Route::middleware(['tokenValidator'])->group(function () {
             Route::put('/update', [\App\Http\Controllers\MasterUserController::class, 'update']);
             Route::delete('/delete', [\App\Http\Controllers\MasterUserController::class, 'delete']);
         });
-    }); 
-       
+    });
+    Route::prefix('transaction')->group(function () {
+        Route::get('/form', [\App\Http\Controllers\TransactionController::class, 'form']);
+        Route::post('/store', [\App\Http\Controllers\TransactionController::class, 'store']);
+    });
 });
