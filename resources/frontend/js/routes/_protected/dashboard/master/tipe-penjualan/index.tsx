@@ -1,18 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Card, CardContent } from '@/components/ui/card';
-import { useMasterCabang } from '@/hooks/master/useMasterCabang';
+import { useMasterTipePenjualan } from '@/hooks/master/useMasterTipePenjualan';
 import { DataTable } from '@/components/shared/DataTable';
 import { ConfirmModal } from '@/components/shared/ConfirmModal';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { FormModal } from '@/components/shared/FormModal';
 
-export const Route = createFileRoute('/_protected/dashboard/master/cabang/')({
-    component: MasterCabangPage,
+export const Route = createFileRoute('/_protected/dashboard/master/tipe-penjualan/')({
+    component: MasterTipePenjualanPage,
 });
 
-function MasterCabangPage() {
+function MasterTipePenjualanPage() {
     const {
-        cabangList,
+        tipePenjualanList,
         isLoading,
         isError,
         isSubmitting,
@@ -30,17 +30,17 @@ function MasterCabangPage() {
         handleSubmit,
         handleOpenDeleteModal, 
         handleConfirmDelete
-    } = useMasterCabang();
+    } = useMasterTipePenjualan();
 
     return (
         <div className="p-6 space-y-6">
             <Card>
-                <PageHeader title="Master Cabang" onAdd={handleOpenCreate} />
+                <PageHeader title="Master Tipe Penjualan" onAdd={handleOpenCreate} />
 
                 <CardContent>
                     <DataTable
-                        columns={[{ header: "Nama Cabang", accessorKey: "label" }]}
-                        data={cabangList}
+                        columns={[{ header: "Nama Tipe Penjualan", accessorKey: "label" }]}
+                        data={tipePenjualanList}
                         isLoading={isLoading}
                         isError={isError}
                         onEdit={handleOpenEdit}
@@ -52,16 +52,16 @@ function MasterCabangPage() {
             <FormModal
                 isOpen={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
-                title={dialogMode === 'create' ? 'Tambah Cabang' : 'Edit Cabang'}
+                title={dialogMode === 'create' ? 'Tambah Tipe Penjualan' : 'Edit Tipe Penjualan'}
                 formData={formData}
                 onFieldChange={handleFormChange}
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
                 fields={[
                     { 
-                        name: 'nama_cabang', 
-                        label: 'Nama Cabang', 
-                        placeholder: 'Contoh: Pondok Indah Mall, Bintaro Xchange, dll',
+                        name: 'nama_tipe_penjualan', 
+                        label: 'Nama Tipe Penjualan', 
+                        placeholder: 'Contoh: GoFood, Orderan',
                         required: true 
                     },
                 ]}
@@ -71,7 +71,7 @@ function MasterCabangPage() {
                 isOpen={isDeleteOpen}
                 onOpenChange={setIsDeleteOpen}
                 onConfirm={handleConfirmDelete}
-                title="Hapus Cabang?"
+                title="Hapus Tipe Penjualan?"
                 description={`Apakah Anda yakin ingin menghapus "${itemToDelete?.label}"? Data yang dihapus tidak dapat dikembalikan.`}
                 confirmLabel="Ya, Hapus"
                 variant="destructive"
