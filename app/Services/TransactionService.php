@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\MasterItemsRepository;
-// use App\Repositories\TransactionRepository;
+use App\Repositories\TransactionRepository;
 use App\Repositories\MasterTipePenjualanRepository;
 use App\Repositories\MasterPembayaranRepository;
 use App\Repositories\MasterCabangRepository;
@@ -11,7 +11,7 @@ use App\Repositories\MasterCabangRepository;
 class TransactionService
 {
     public function __construct(
-        // protected TransactionRepository $transactionRepository,
+        protected TransactionRepository $transactionRepository,
         protected MasterItemsRepository $masterItemsRepository,
         protected MasterTipePenjualanRepository $masterTipePenjualanRepository,
         protected MasterPembayaranRepository $masterPembayaranRepository,
@@ -31,5 +31,10 @@ class TransactionService
             'pembayaran' => $pembayaran,
             'cabang' => $cabang
         ];
+    }
+
+    public function store(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string $nama_pembeli, string $telp_pembeli, array $items, string $nip): bool    
+    {
+        return $this->transactionRepository->storeTransaction($id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $nip);
     }
 }

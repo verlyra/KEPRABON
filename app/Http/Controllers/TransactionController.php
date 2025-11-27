@@ -45,7 +45,8 @@ class TransactionController extends Controller
         $nama_pembeli = $validated['nama_pembeli'];
         $telp_pembeli = $validated['telp_pembeli'];
         $items = $validated['items'];
+        $user = $request->attributes->get('auth_user');
         
-        return Response::success($this->transactionService->store($nip, $items, $paymentMethod));
+        return Response::success($this->transactionService->store($id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $user->nip));
     }
 }
