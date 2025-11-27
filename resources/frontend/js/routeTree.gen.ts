@@ -16,6 +16,7 @@ import { Route as PublicSplatRouteImport } from './routes/_public/$'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedDashboardSplatRouteImport } from './routes/_protected/dashboard/$'
 import { Route as ProtectedDashboardMasterPembayaranIndexRouteImport } from './routes/_protected/dashboard/master/pembayaran/index'
+import { Route as ProtectedDashboardMasterCabangIndexRouteImport } from './routes/_protected/dashboard/master/cabang/index'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -51,12 +52,19 @@ const ProtectedDashboardMasterPembayaranIndexRoute =
     path: '/dashboard/master/pembayaran/',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
+const ProtectedDashboardMasterCabangIndexRoute =
+  ProtectedDashboardMasterCabangIndexRouteImport.update({
+    id: '/dashboard/master/cabang/',
+    path: '/dashboard/master/cabang/',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/$': typeof PublicSplatRoute
   '/': typeof PublicIndexRoute
   '/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/dashboard/master/cabang': typeof ProtectedDashboardMasterCabangIndexRoute
   '/dashboard/master/pembayaran': typeof ProtectedDashboardMasterPembayaranIndexRoute
 }
 export interface FileRoutesByTo {
@@ -64,6 +72,7 @@ export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/dashboard/master/cabang': typeof ProtectedDashboardMasterCabangIndexRoute
   '/dashboard/master/pembayaran': typeof ProtectedDashboardMasterPembayaranIndexRoute
 }
 export interface FileRoutesById {
@@ -74,6 +83,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_protected/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/_protected/dashboard/master/cabang/': typeof ProtectedDashboardMasterCabangIndexRoute
   '/_protected/dashboard/master/pembayaran/': typeof ProtectedDashboardMasterPembayaranIndexRoute
 }
 export interface FileRouteTypes {
@@ -83,6 +93,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/$'
     | '/dashboard'
+    | '/dashboard/master/cabang'
     | '/dashboard/master/pembayaran'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -90,6 +101,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/$'
     | '/dashboard'
+    | '/dashboard/master/cabang'
     | '/dashboard/master/pembayaran'
   id:
     | '__root__'
@@ -99,6 +111,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_protected/dashboard/$'
     | '/_protected/dashboard/'
+    | '/_protected/dashboard/master/cabang/'
     | '/_protected/dashboard/master/pembayaran/'
   fileRoutesById: FileRoutesById
 }
@@ -158,18 +171,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardMasterPembayaranIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/dashboard/master/cabang/': {
+      id: '/_protected/dashboard/master/cabang/'
+      path: '/dashboard/master/cabang'
+      fullPath: '/dashboard/master/cabang'
+      preLoaderRoute: typeof ProtectedDashboardMasterCabangIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
   }
 }
 
 interface ProtectedRouteRouteChildren {
   ProtectedDashboardSplatRoute: typeof ProtectedDashboardSplatRoute
   ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
+  ProtectedDashboardMasterCabangIndexRoute: typeof ProtectedDashboardMasterCabangIndexRoute
   ProtectedDashboardMasterPembayaranIndexRoute: typeof ProtectedDashboardMasterPembayaranIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedDashboardSplatRoute: ProtectedDashboardSplatRoute,
   ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
+  ProtectedDashboardMasterCabangIndexRoute:
+    ProtectedDashboardMasterCabangIndexRoute,
   ProtectedDashboardMasterPembayaranIndexRoute:
     ProtectedDashboardMasterPembayaranIndexRoute,
 }
