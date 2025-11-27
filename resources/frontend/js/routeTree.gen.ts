@@ -15,6 +15,7 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicSplatRouteImport } from './routes/_public/$'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedDashboardSplatRouteImport } from './routes/_protected/dashboard/$'
+import { Route as ProtectedDashboardMasterPembayaranIndexRouteImport } from './routes/_protected/dashboard/master/pembayaran/index'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -44,18 +45,26 @@ const ProtectedDashboardSplatRoute = ProtectedDashboardSplatRouteImport.update({
   path: '/dashboard/$',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedDashboardMasterPembayaranIndexRoute =
+  ProtectedDashboardMasterPembayaranIndexRouteImport.update({
+    id: '/dashboard/master/pembayaran/',
+    path: '/dashboard/master/pembayaran/',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/$': typeof PublicSplatRoute
   '/': typeof PublicIndexRoute
   '/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/dashboard/master/pembayaran': typeof ProtectedDashboardMasterPembayaranIndexRoute
 }
 export interface FileRoutesByTo {
   '/$': typeof PublicSplatRoute
   '/': typeof PublicIndexRoute
   '/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/dashboard/master/pembayaran': typeof ProtectedDashboardMasterPembayaranIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -65,12 +74,23 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_protected/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/_protected/dashboard/master/pembayaran/': typeof ProtectedDashboardMasterPembayaranIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/$' | '/' | '/dashboard/$' | '/dashboard'
+  fullPaths:
+    | '/$'
+    | '/'
+    | '/dashboard/$'
+    | '/dashboard'
+    | '/dashboard/master/pembayaran'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$' | '/' | '/dashboard/$' | '/dashboard'
+  to:
+    | '/$'
+    | '/'
+    | '/dashboard/$'
+    | '/dashboard'
+    | '/dashboard/master/pembayaran'
   id:
     | '__root__'
     | '/_protected'
@@ -79,6 +99,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_protected/dashboard/$'
     | '/_protected/dashboard/'
+    | '/_protected/dashboard/master/pembayaran/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -130,17 +151,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardSplatRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/dashboard/master/pembayaran/': {
+      id: '/_protected/dashboard/master/pembayaran/'
+      path: '/dashboard/master/pembayaran'
+      fullPath: '/dashboard/master/pembayaran'
+      preLoaderRoute: typeof ProtectedDashboardMasterPembayaranIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
   }
 }
 
 interface ProtectedRouteRouteChildren {
   ProtectedDashboardSplatRoute: typeof ProtectedDashboardSplatRoute
   ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
+  ProtectedDashboardMasterPembayaranIndexRoute: typeof ProtectedDashboardMasterPembayaranIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedDashboardSplatRoute: ProtectedDashboardSplatRoute,
   ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
+  ProtectedDashboardMasterPembayaranIndexRoute:
+    ProtectedDashboardMasterPembayaranIndexRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(

@@ -1,11 +1,11 @@
 import api from '@/lib/axios';
 import type { ApiResponseError, ApiResponseSuccess } from '@/types/api';
 import type { LoginCredentials } from '@/types/auth';
-import { TUser } from '@/types/user';
+import { User } from '@/types/user';
 
 export const login = async (credentials: LoginCredentials) => {
     try {
-        const { data } = await api.post<ApiResponseSuccess<TUser> | ApiResponseError>(
+        const { data } = await api.post<ApiResponseSuccess<User> | ApiResponseError>(
             '/auth/login',
             credentials
         );
@@ -14,7 +14,7 @@ export const login = async (credentials: LoginCredentials) => {
             throw new Error(data.responseMessage);
         }
 
-        return data.responseResult;
+        return data.responseBody;
     } catch (err: any) {
         const message = err.response?.data?.responseMessage || err.message || 'Terjadi kesalahan saat login.';
         throw new Error(message);
