@@ -52,4 +52,5 @@ Route::middleware(['tokenValidator'])->group(function () {
         Route::get('/form', [\App\Http\Controllers\TransactionController::class, 'form']);
         Route::post('/store', [\App\Http\Controllers\TransactionController::class, 'store']);
     });
+    Route::get('/laporan', [\App\Http\Controllers\LaporanController::class, 'laporan']);
 });
