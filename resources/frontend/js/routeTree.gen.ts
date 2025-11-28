@@ -15,6 +15,7 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicSplatRouteImport } from './routes/_public/$'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedDashboardSplatRouteImport } from './routes/_protected/dashboard/$'
+import { Route as ProtectedDashboardMasterUsersIndexRouteImport } from './routes/_protected/dashboard/master/users/index'
 import { Route as ProtectedDashboardMasterTipePenjualanIndexRouteImport } from './routes/_protected/dashboard/master/tipe-penjualan/index'
 import { Route as ProtectedDashboardMasterPembayaranIndexRouteImport } from './routes/_protected/dashboard/master/pembayaran/index'
 import { Route as ProtectedDashboardMasterItemsIndexRouteImport } from './routes/_protected/dashboard/master/items/index'
@@ -48,6 +49,12 @@ const ProtectedDashboardSplatRoute = ProtectedDashboardSplatRouteImport.update({
   path: '/dashboard/$',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedDashboardMasterUsersIndexRoute =
+  ProtectedDashboardMasterUsersIndexRouteImport.update({
+    id: '/dashboard/master/users/',
+    path: '/dashboard/master/users/',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 const ProtectedDashboardMasterTipePenjualanIndexRoute =
   ProtectedDashboardMasterTipePenjualanIndexRouteImport.update({
     id: '/dashboard/master/tipe-penjualan/',
@@ -82,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/master/items': typeof ProtectedDashboardMasterItemsIndexRoute
   '/dashboard/master/pembayaran': typeof ProtectedDashboardMasterPembayaranIndexRoute
   '/dashboard/master/tipe-penjualan': typeof ProtectedDashboardMasterTipePenjualanIndexRoute
+  '/dashboard/master/users': typeof ProtectedDashboardMasterUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/$': typeof PublicSplatRoute
@@ -92,6 +100,7 @@ export interface FileRoutesByTo {
   '/dashboard/master/items': typeof ProtectedDashboardMasterItemsIndexRoute
   '/dashboard/master/pembayaran': typeof ProtectedDashboardMasterPembayaranIndexRoute
   '/dashboard/master/tipe-penjualan': typeof ProtectedDashboardMasterTipePenjualanIndexRoute
+  '/dashboard/master/users': typeof ProtectedDashboardMasterUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -105,6 +114,7 @@ export interface FileRoutesById {
   '/_protected/dashboard/master/items/': typeof ProtectedDashboardMasterItemsIndexRoute
   '/_protected/dashboard/master/pembayaran/': typeof ProtectedDashboardMasterPembayaranIndexRoute
   '/_protected/dashboard/master/tipe-penjualan/': typeof ProtectedDashboardMasterTipePenjualanIndexRoute
+  '/_protected/dashboard/master/users/': typeof ProtectedDashboardMasterUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/dashboard/master/items'
     | '/dashboard/master/pembayaran'
     | '/dashboard/master/tipe-penjualan'
+    | '/dashboard/master/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/$'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/dashboard/master/items'
     | '/dashboard/master/pembayaran'
     | '/dashboard/master/tipe-penjualan'
+    | '/dashboard/master/users'
   id:
     | '__root__'
     | '/_protected'
@@ -139,6 +151,7 @@ export interface FileRouteTypes {
     | '/_protected/dashboard/master/items/'
     | '/_protected/dashboard/master/pembayaran/'
     | '/_protected/dashboard/master/tipe-penjualan/'
+    | '/_protected/dashboard/master/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,6 +203,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardSplatRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/dashboard/master/users/': {
+      id: '/_protected/dashboard/master/users/'
+      path: '/dashboard/master/users'
+      fullPath: '/dashboard/master/users'
+      preLoaderRoute: typeof ProtectedDashboardMasterUsersIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/dashboard/master/tipe-penjualan/': {
       id: '/_protected/dashboard/master/tipe-penjualan/'
       path: '/dashboard/master/tipe-penjualan'
@@ -228,6 +248,7 @@ interface ProtectedRouteRouteChildren {
   ProtectedDashboardMasterItemsIndexRoute: typeof ProtectedDashboardMasterItemsIndexRoute
   ProtectedDashboardMasterPembayaranIndexRoute: typeof ProtectedDashboardMasterPembayaranIndexRoute
   ProtectedDashboardMasterTipePenjualanIndexRoute: typeof ProtectedDashboardMasterTipePenjualanIndexRoute
+  ProtectedDashboardMasterUsersIndexRoute: typeof ProtectedDashboardMasterUsersIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
@@ -241,6 +262,8 @@ const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
     ProtectedDashboardMasterPembayaranIndexRoute,
   ProtectedDashboardMasterTipePenjualanIndexRoute:
     ProtectedDashboardMasterTipePenjualanIndexRoute,
+  ProtectedDashboardMasterUsersIndexRoute:
+    ProtectedDashboardMasterUsersIndexRoute,
 }
 
 const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(

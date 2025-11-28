@@ -5,18 +5,19 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { TableActionButtons } from '@/components/shared/TableActionButton';
 
-export interface SimpleColumn<T> {
+export interface ColumnDef<T> {
     header: string;
-    accessorKey: keyof T; 
+    accessorKey?: keyof T;
+    cell?: (item: T) => React.ReactNode;
+    className?: string;
 }
 
 interface DataTableProps<T> {
-    columns: SimpleColumn<T>[];   // Kolom data (tengah)
+    columns: ColumnDef<T>[];
     data: T[] | undefined;
     isLoading: boolean;
     isError: boolean;
-    // Handler dikirim langsung ke DataTable
-    onEdit?: (item: T) => void;   
+    onEdit?: (item: T) => void;
     onDelete?: (item: T) => void;
     emptyMessage?: string;
 }
@@ -31,7 +32,6 @@ export function DataTable<T extends { value: string | number }>({
     emptyMessage = "Tidak ada data ditemukan."
 }: DataTableProps<T>) {
     
-    // 1. Loading
     if (isLoading) {
         return (
             <div className="space-y-2">
@@ -42,7 +42,6 @@ export function DataTable<T extends { value: string | number }>({
         );
     }
 
-    // 2. Error
     if (isError) {
         return (
             <div className="text-center text-red-500 py-6 border rounded-md bg-red-50">
@@ -51,21 +50,22 @@ export function DataTable<T extends { value: string | number }>({
         );
     }
 
-    // 3. Render
     return (
         <div className="rounded-md border">
             <Table>
                 <TableHeader>
                     <TableRow>
-                        {/* A. Kolom No (Hardcoded Style) */}
                         <TableHead className="w-[50px] font-medium text-center">No</TableHead>
 
-                        {/* B. Kolom Data Dinamis */}
                         {columns.map((col, idx) => (
-                            <TableHead key={idx}>{col.header}</TableHead>
+                            <TableHead 
+                                key={idx} 
+                                className={col.className}
+                            >
+                                {col.header}
+                            </TableHead>
                         ))}
 
-                        {/* C. Kolom Aksi (Hanya muncul jika handler onEdit/onDelete ada) */}
                         {(onEdit || onDelete) && (
                             <TableHead className="text-right">Aksi</TableHead>
                         )}
@@ -75,20 +75,21 @@ export function DataTable<T extends { value: string | number }>({
                     {data && data.length > 0 ? (
                         data.map((item, index) => (
                             <TableRow key={item.value}>
-                                {/* A. Cell No */}
                                 <TableCell className="text-center font-medium">
                                     {index + 1}
                                 </TableCell>
 
-                                {/* B. Cell Data */}
                                 {columns.map((col, colIdx) => (
-                                    <TableCell key={colIdx}>
-                                        {/* Render data berdasarkan key */}
-                                        {item[col.accessorKey] as React.ReactNode}
+                                    <TableCell key={colIdx} className={col.className}>
+                                        {col.cell 
+                                            ? col.cell(item) 
+                                            : col.accessorKey 
+                                                ? (item[col.accessorKey] as React.ReactNode)
+                                                : null
+                                        }
                                     </TableCell>
                                 ))}
 
-                                {/* C. Cell Aksi */}
                                 {(onEdit || onDelete) && (
                                     <TableCell className="text-right">
                                         <TableActionButtons 
@@ -100,7 +101,6 @@ export function DataTable<T extends { value: string | number }>({
                             </TableRow>
                         ))
                     ) : (
-                        // Hitung total kolom untuk colspan (No + Data + Aksi)
                         <TableRow>
                             <TableCell 
                                 colSpan={1 + columns.length + (onEdit || onDelete ? 1 : 0)} 
