@@ -28,7 +28,7 @@ class TransactionRepository
 
             foreach ($items as $item) {
                 DB::table('TRX_DETAIL_PENJUALAN')->insert([
-                    'id_trx' => $id_trx,
+                    'id_penjualan' => $id_trx,
                     'id_item' => $item['id_item'],
                     'kuantitas' => $item['kuantitas'],
                     'harga' => $item['harga']
