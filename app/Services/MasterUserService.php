@@ -14,14 +14,14 @@ class MasterUserService{
         return $this->MasterUserRepository->getAllUser();
     }
 
-    public function store(string $nip, string $nama, string $password, bool $aktif): bool
+    public function store(string $nip, string $nama, string $password): bool
     {
-        return $this->MasterUserRepository->storeUser($nip, $nama, $password, $aktif);
+        return $this->MasterUserRepository->storeUser($nip, $nama, $password);
     }
 
-    public function update(string $nip_old, string $nip_new, string $nama, string $password, bool $aktif): bool
+    public function update(string $nip_old, string $nip_new, string $nama, string $password): bool
     {
-        return $this->MasterUserRepository->updateUser($nip_old, $nip_new, $nama, $password, $aktif);
+        return $this->MasterUserRepository->updateUser($nip_old, $nip_new, $nama, $password);
     }
 
     public function delete(string $nip): bool
