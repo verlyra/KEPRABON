@@ -26,7 +26,6 @@ class MasterUserController extends Controller
             'nip' => 'required|string|max:20',
             'nama' => 'required|string|max:255',
             'password' => 'required|string|min:6',
-            'aktif' => 'required|boolean',
         ]);
 
         if ($validator->fails()) return Response::badRequest($validator->errors());
@@ -35,9 +34,8 @@ class MasterUserController extends Controller
         $nip = $validated['nip'];
         $nama = $validated['nama'];
         $password = $validated['password'];
-        $aktif = $validated['aktif'];
 
-        return Response::success($this->MasterUserService->store($nip, $nama, $password, $aktif));
+        return Response::success($this->MasterUserService->store($nip, $nama, $password));
     }
 
     public function update(Request $request)
@@ -47,7 +45,6 @@ class MasterUserController extends Controller
             'nip_new' => 'required|string|max:20',
             'nama' => 'required|string|max:255',
             'password' => 'required|string|min:6',
-            'aktif' => 'required|boolean',
         ]);
 
         if ($validator->fails()) return Response::badRequest($validator->errors());
@@ -57,9 +54,8 @@ class MasterUserController extends Controller
         $nip_new = $validated['nip_new'];
         $nama = $validated['nama'];
         $password = $validated['password'];
-        $aktif = $validated['aktif'];
 
-        return Response::success($this->MasterUserService->update($nip_old, $nip_new, $nama, $password, $aktif));
+        return Response::success($this->MasterUserService->update($nip_old, $nip_new, $nama, $password));
     }
 
     public function delete(Request $request)

@@ -10,26 +10,26 @@ class MasterUserRepository
 {
     public function getAllUser()
     {
-        return DB::select("SELECT nip as nip, nama as nama, aktif as aktif FROM MASTER_USER");
+        return DB::select("SELECT nip as nip, nama as nama FROM MASTER_USER");
     }
 
-    public function storeUser(string $nip, string $nama, string $password, bool $aktif): bool
+    public function storeUser(string $nip, string $nama, string $password): bool
     {
         $hashedPassword = Hash::make($password);
 
         return DB::insert(
-            "INSERT INTO MASTER_USER (nip, nama, password, aktif) VALUES (?, ?, ?, ?)",
-            [$nip, $nama, $hashedPassword, $aktif]
+            "INSERT INTO MASTER_USER (nip, nama, password) VALUES (?, ?, ?)",
+            [$nip, $nama, $hashedPassword]
         );
     }
 
-    public function updateUser(string $nip_old, string $nip_new, string $nama, string $password, bool $aktif): bool
+    public function updateUser(string $nip_old, string $nip_new, string $nama, string $password): bool
     {
         $hashedPassword = Hash::make($password);
 
         return DB::update(
-            "UPDATE MASTER_USER SET nip = ?, nama = ?, password = ?, aktif = ? WHERE nip = ?",
-            [$nip_new, $nama, $hashedPassword, $aktif, $nip_old]
+            "UPDATE MASTER_USER SET nip = ?, nama = ?, password = ? WHERE nip = ?",
+            [$nip_new, $nama, $hashedPassword, $nip_old]
         );
     }
 
