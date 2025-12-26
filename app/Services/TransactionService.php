@@ -33,7 +33,7 @@ class TransactionService
         ];
     }
 
-    public function store(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string $nama_pembeli, string $telp_pembeli, array $items, string $nip): bool    
+    public function store(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool    
     {
         return $this->transactionRepository->storeTransaction($id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $nip);
     }

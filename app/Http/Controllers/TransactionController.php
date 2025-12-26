@@ -23,15 +23,15 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "id_cabang"=>'required|integer|max:11',
-            "id_tipe_penjualan"=>'required|integer|max:11',
-            "id_pembayaran"=>'required|integer|max:11',
+            "id_cabang"=>'required|integer',
+            "id_tipe_penjualan"=>'required|integer',
+            "id_pembayaran"=>'required|integer',
             "tanggal_beli"=>'required',
-            "nama_pembeli"=>'required|string|max:255',
-            "telp_pembeli"=>'required|string|max:20',
+            "nama_pembeli"=>'nullable|string|max:255',
+            "telp_pembeli"=>'nullable|string|max:20',
             "items"=>'required|array',
-            "items.*.id_item"=>'required|integer|max:11',
-            "items.*.kuantitas"=>'required|integer|max:11',
+            "items.*.id_item"=>'required|integer',
+            "items.*.kuantitas"=>'required|integer',
             "items.*.harga"=>'required|numeric'
         ]);
 

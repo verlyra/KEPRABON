@@ -17,7 +17,7 @@ class DashboardService
         return [
             'nip' => $user->nip,
             'nama' => $user->nama,
-            'aktif' => $user->aktif
+            // 'aktif' => $user->aktif
         ];
     }
 }

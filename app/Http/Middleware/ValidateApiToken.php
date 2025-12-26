@@ -32,7 +32,7 @@ class ValidateApiToken
 
             if (!$user) return Response::unauthorized('Akses ditolak: User tidak ditemukan.');
 
-            if (!$user->aktif) return Response::unauthorized('Akses ditolak: Akun Anda tidak aktif.');
+            // if (!$user->aktif) return Response::unauthorized('Akses ditolak: Akun Anda tidak aktif.');
 
             if ($jwtToken !== $user->token) return Response::unauthorized('Akses ditolak: Sesi tidak valid. Silakan login kembali.');
 

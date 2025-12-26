@@ -60,7 +60,7 @@ export const sidebarNav: NavItem[] = [
         },
         {
             title: 'User',
-            url: '/dashboard/master/user',
+            url: '/dashboard/master/users',
             icon: UserCog,
         },
         ]
