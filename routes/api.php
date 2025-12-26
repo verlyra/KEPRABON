@@ -49,6 +49,8 @@ Route::middleware(['tokenValidator'])->group(function () {
         });
     });
     Route::prefix('transaction')->group(function () {
+        Route::get('/list', [\App\Http\Controllers\TransactionController::class, 'index']); 
+        Route::get('/detail/{id}', [\App\Http\Controllers\TransactionController::class, 'detail']);
         Route::get('/form', [\App\Http\Controllers\TransactionController::class, 'form']);
         Route::post('/store', [\App\Http\Controllers\TransactionController::class, 'store']);
     });

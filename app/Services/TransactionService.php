@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use App\Repositories\MasterItemsRepository;
 use App\Repositories\TransactionRepository;
 use App\Repositories\MasterTipePenjualanRepository;
@@ -17,6 +18,20 @@ class TransactionService
         protected MasterPembayaranRepository $masterPembayaranRepository,
         protected MasterCabangRepository $masterCabangRepository
     ){}
+
+    public function getTransactions(string $startDate, string $endDate)
+    {
+        // Format input d-m-Y menjadi Y-m-d untuk query database
+        $start = Carbon::createFromFormat('d-m-Y', $startDate)->format('Y-m-d 00:00:00');
+        $end = Carbon::createFromFormat('d-m-Y', $endDate)->format('Y-m-d 23:59:59');
+
+        return $this->transactionRepository->getTransactionsByRange($start, $end);
+    }
+
+    public function getDetail(int $id_penjualan)
+    {
+        return $this->transactionRepository->getDetailByPenjualanId($id_penjualan);
+    }
 
     public function form(): array
     {

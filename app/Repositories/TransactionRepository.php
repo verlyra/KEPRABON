@@ -42,4 +42,18 @@ class TransactionRepository
             throw $e;
         }
     }
+
+    public function getTransactionsByRange(string $startDate, string $endDate)
+    {
+        return DB::table('TRX_PENJUALAN')
+            ->whereBetween('tanggal_beli', [$startDate, $endDate])
+            ->get();
+    }
+
+    public function getDetailByPenjualanId(int $id_penjualan)
+    {
+        return DB::table('TRX_DETAIL_PENJUALAN')
+            ->where('id_penjualan', $id_penjualan)
+            ->get();
+    }
 }
