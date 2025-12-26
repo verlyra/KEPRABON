@@ -15,6 +15,30 @@ class TransactionController extends Controller
         $this->transactionService = $transactionService;
     }
 
+    public function index(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date_format:d-m-Y',
+            'end_date' => 'required|date_format:d-m-Y',
+        ]);
+
+        if ($validator->fails()) return Response::badRequest($validator->errors());
+
+        $validated = $validator->validated();
+        
+        return Response::success(
+            $this->transactionService->getTransactions($validated['start_date'], $validated['end_date'])
+        );
+    }
+
+    public function detail($id)
+    {
+        return Response::success(
+            $this->transactionService->getDetail($id)
+        );
+    }
+
+
     public function form()
     {
         return Response::success($this->transactionService->form());
