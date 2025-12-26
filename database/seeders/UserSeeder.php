@@ -18,7 +18,6 @@ class UserSeeder extends Seeder
             'nip' => '29057322',
             'nama' => 'purwati',
             'password' => Hash::make('admin123'),
-            'aktif' => true,
         ]);
     }
 }

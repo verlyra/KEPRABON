@@ -12,7 +12,7 @@ class TransactionRepository
         return DB::select("SELECT * FROM TRX_PENJUALAN");
     }
 
-    public function storeTransaction(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string $nama_pembeli, string $telp_pembeli, array $items, string $nip): bool
+    public function storeTransaction(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool
     {
         DB::beginTransaction();
         try {

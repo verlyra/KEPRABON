@@ -23,12 +23,12 @@ class AuthService
             ];
         }
 
-        if (!$user->aktif) {
-            return [
-                'status'  => false,
-                'message' => 'Akun Anda tidak aktif.'
-            ];
-        }
+        // if (!$user->aktif) {
+        //     return [
+        //         'status'  => false,
+        //         'message' => 'Akun Anda tidak aktif.'
+        //     ];
+        // }
 
         $secretKey = config('app.key');
 
