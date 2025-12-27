@@ -1,19 +1,19 @@
 export interface UserData {
     nip: string;
     nama: string;
-    aktif: number;
+    // aktif: number;
 }
 
 export interface UserTableData extends UserData {
     value: string;
-    status_label: string;
+    // status_label: string;
 }
 
 export interface CreateUserPayload {
     nip: string;
     nama: string;
     password: string;
-    aktif: boolean;
+    // aktif: boolean;
 }
 
 export interface UpdateUserPayload {
@@ -21,7 +21,7 @@ export interface UpdateUserPayload {
     nip_new: string;
     nama: string;
     password: string;
-    aktif: boolean;
+    // aktif: boolean;
 }
 
 export interface DeleteUserPayload {

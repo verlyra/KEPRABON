@@ -36,15 +36,15 @@ function MasterUsersPage() {
                         columns={[
                             { header: "NIP", accessorKey: "nip" },
                             { header: "Nama User", accessorKey: "nama" },
-                            { 
-                                header: "Status", 
-                                accessorKey: "aktif",
-                                cell: (item) => (
-                                    <Badge variant={item.aktif === 1 ? 'default' : 'secondary'} className={item.aktif === 1 ? 'bg-green-500' : 'bg-red-800'}>
-                                        {item.status_label}
-                                    </Badge>
-                                )
-                            }
+                            // { 
+                            //     header: "Status", 
+                            //     accessorKey: "aktif",
+                            //     cell: (item) => (
+                            //         <Badge variant={item.aktif === 1 ? 'default' : 'secondary'} className={item.aktif === 1 ? 'bg-green-500' : 'bg-red-800'}>
+                            //             {item.status_label}
+                            //         </Badge>
+                            //     )
+                            // }
                         ]}
                         
                         data={usersList}
@@ -87,16 +87,16 @@ function MasterUsersPage() {
                         placeholder: 'Minimal 6 karakter', 
                         required: true 
                     },
-                    { 
-                        name: 'aktif', 
-                        label: 'Status Aktif', 
-                        type: 'select',
-                        options: [
-                            { label: 'Aktif', value: '1' },
-                            { label: 'Tidak Aktif', value: '0' }
-                        ],
-                        required: true 
-                    }
+                    // { 
+                    //     name: 'aktif', 
+                    //     label: 'Status Aktif', 
+                    //     type: 'select',
+                    //     options: [
+                    //         { label: 'Aktif', value: '1' },
+                    //         { label: 'Tidak Aktif', value: '0' }
+                    //     ],
+                    //     required: true 
+                    // }
                 ]}
             />
 

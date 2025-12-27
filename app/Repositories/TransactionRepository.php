@@ -56,12 +56,25 @@ class TransactionRepository
                 d.nama_pembayaran, 
                 DATE_FORMAT(a.tanggal_beli, '%d-%m-%Y') as tanggal_beli, 
                 a.nama_pembeli, 
-                a.telp_pembeli
+                a.telp_pembeli,
+                sum(e.kuantitas*e.harga) as total
             FROM trx_penjualan a 
             JOIN master_cabang b on a.id_cabang = b.id_cabang
             JOIN master_tipe_penjualan c on a.id_tipe_penjualan = c.id_tipe_penjualan
             JOIN master_pembayaran d on a.id_pembayaran = d.id_pembayaran
-            WHERE a.tanggal_beli BETWEEN ? AND ?",
+            JOIN trx_detail_penjualan e on a.id_penjualan = e.id_penjualan
+            WHERE a.tanggal_beli BETWEEN ? AND ?
+            GROUP BY 
+                a.id_penjualan,
+                a.id_cabang,
+                b.nama_cabang,
+                a.id_tipe_penjualan,
+                c.nama_tipe_penjualan,
+                a.id_pembayaran,
+                d.nama_pembayaran,
+                a.tanggal_beli,
+                a.nama_pembeli,
+                a.telp_pembeli",
             [$startDate, $endDate]
         );
     }

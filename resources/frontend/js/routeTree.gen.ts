@@ -16,6 +16,7 @@ import { Route as PublicSplatRouteImport } from './routes/_public/$'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as ProtectedDashboardSplatRouteImport } from './routes/_protected/dashboard/$'
 import { Route as ProtectedDashboardPenjualanIndexRouteImport } from './routes/_protected/dashboard/penjualan/index'
+import { Route as ProtectedDashboardPelaporanIndexRouteImport } from './routes/_protected/dashboard/pelaporan/index'
 import { Route as ProtectedDashboardMasterUsersIndexRouteImport } from './routes/_protected/dashboard/master/users/index'
 import { Route as ProtectedDashboardMasterTipePenjualanIndexRouteImport } from './routes/_protected/dashboard/master/tipe-penjualan/index'
 import { Route as ProtectedDashboardMasterPembayaranIndexRouteImport } from './routes/_protected/dashboard/master/pembayaran/index'
@@ -56,6 +57,12 @@ const ProtectedDashboardPenjualanIndexRoute =
     path: '/dashboard/penjualan/',
     getParentRoute: () => ProtectedRouteRoute,
   } as any)
+const ProtectedDashboardPelaporanIndexRoute =
+  ProtectedDashboardPelaporanIndexRouteImport.update({
+    id: '/dashboard/pelaporan/',
+    path: '/dashboard/pelaporan/',
+    getParentRoute: () => ProtectedRouteRoute,
+  } as any)
 const ProtectedDashboardMasterUsersIndexRoute =
   ProtectedDashboardMasterUsersIndexRouteImport.update({
     id: '/dashboard/master/users/',
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/dashboard/pelaporan': typeof ProtectedDashboardPelaporanIndexRoute
   '/dashboard/penjualan': typeof ProtectedDashboardPenjualanIndexRoute
   '/dashboard/master/cabang': typeof ProtectedDashboardMasterCabangIndexRoute
   '/dashboard/master/items': typeof ProtectedDashboardMasterItemsIndexRoute
@@ -104,6 +112,7 @@ export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/dashboard/pelaporan': typeof ProtectedDashboardPelaporanIndexRoute
   '/dashboard/penjualan': typeof ProtectedDashboardPenjualanIndexRoute
   '/dashboard/master/cabang': typeof ProtectedDashboardMasterCabangIndexRoute
   '/dashboard/master/items': typeof ProtectedDashboardMasterItemsIndexRoute
@@ -119,6 +128,7 @@ export interface FileRoutesById {
   '/_public/': typeof PublicIndexRoute
   '/_protected/dashboard/$': typeof ProtectedDashboardSplatRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/_protected/dashboard/pelaporan/': typeof ProtectedDashboardPelaporanIndexRoute
   '/_protected/dashboard/penjualan/': typeof ProtectedDashboardPenjualanIndexRoute
   '/_protected/dashboard/master/cabang/': typeof ProtectedDashboardMasterCabangIndexRoute
   '/_protected/dashboard/master/items/': typeof ProtectedDashboardMasterItemsIndexRoute
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/$'
     | '/dashboard'
+    | '/dashboard/pelaporan'
     | '/dashboard/penjualan'
     | '/dashboard/master/cabang'
     | '/dashboard/master/items'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/$'
     | '/dashboard'
+    | '/dashboard/pelaporan'
     | '/dashboard/penjualan'
     | '/dashboard/master/cabang'
     | '/dashboard/master/items'
@@ -159,6 +171,7 @@ export interface FileRouteTypes {
     | '/_public/'
     | '/_protected/dashboard/$'
     | '/_protected/dashboard/'
+    | '/_protected/dashboard/pelaporan/'
     | '/_protected/dashboard/penjualan/'
     | '/_protected/dashboard/master/cabang/'
     | '/_protected/dashboard/master/items/'
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedDashboardPenjualanIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/dashboard/pelaporan/': {
+      id: '/_protected/dashboard/pelaporan/'
+      path: '/dashboard/pelaporan'
+      fullPath: '/dashboard/pelaporan'
+      preLoaderRoute: typeof ProtectedDashboardPelaporanIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
     '/_protected/dashboard/master/users/': {
       id: '/_protected/dashboard/master/users/'
       path: '/dashboard/master/users'
@@ -264,6 +284,7 @@ declare module '@tanstack/react-router' {
 interface ProtectedRouteRouteChildren {
   ProtectedDashboardSplatRoute: typeof ProtectedDashboardSplatRoute
   ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
+  ProtectedDashboardPelaporanIndexRoute: typeof ProtectedDashboardPelaporanIndexRoute
   ProtectedDashboardPenjualanIndexRoute: typeof ProtectedDashboardPenjualanIndexRoute
   ProtectedDashboardMasterCabangIndexRoute: typeof ProtectedDashboardMasterCabangIndexRoute
   ProtectedDashboardMasterItemsIndexRoute: typeof ProtectedDashboardMasterItemsIndexRoute
@@ -275,6 +296,7 @@ interface ProtectedRouteRouteChildren {
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
   ProtectedDashboardSplatRoute: ProtectedDashboardSplatRoute,
   ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
+  ProtectedDashboardPelaporanIndexRoute: ProtectedDashboardPelaporanIndexRoute,
   ProtectedDashboardPenjualanIndexRoute: ProtectedDashboardPenjualanIndexRoute,
   ProtectedDashboardMasterCabangIndexRoute:
     ProtectedDashboardMasterCabangIndexRoute,
