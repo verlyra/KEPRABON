@@ -16,7 +16,7 @@ export const useGetUsers = () => {
         select: (data): UserTableData[] => data.map(user => ({
             ...user,
             value: user.nip,
-            status_label: user.aktif === 1 ? 'Aktif' : 'Tidak Aktif'
+            // status_label: user.aktif === 1 ? 'Aktif' : 'Tidak Aktif'
         })),
     });
 };

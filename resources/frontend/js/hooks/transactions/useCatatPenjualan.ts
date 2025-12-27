@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { toast } from '@/lib/swal';
 import { format } from 'date-fns';
 import { useGetTransactionForm, useStoreTransaction } from '@/api/transaction/hooks';
-import { ItemResource, CartItem } from '@/types/transactions/penjualan';
+import { CartItem } from '@/types/transactions/penjualan';
 
 export const useCatatPenjualan = () => {
     const { data: formResource, isLoading, isError } = useGetTransactionForm();
@@ -75,6 +75,17 @@ export const useCatatPenjualan = () => {
         setCart(newCart);
     };
 
+    const handleUpdateItemQty = (index: number, newQtyStr: string) => {
+        const newCart = [...cart];
+        let newQty = parseInt(newQtyStr);
+        if (isNaN(newQty) || newQty < 1) newQty = 1;
+
+        newCart[index].qty = newQty;
+        newCart[index].subtotal = newCart[index].qty * newCart[index].transactionPrice;
+        
+        setCart(newCart);
+    };
+
     const handleSubmit = async () => {
         if (!formData.id_cabang || !formData.id_tipe_penjualan || !formData.id_pembayaran) {
             toast.error("Mohon lengkapi Cabang, Tipe Penjualan, dan Pembayaran.");
@@ -96,7 +107,7 @@ export const useCatatPenjualan = () => {
                 items: cart.map(item => ({
                     id_item: item.id,
                     kuantitas: item.qty,
-                    harga: item.subtotal
+                    harga: item.harga
                 }))
             });
 
@@ -126,6 +137,7 @@ export const useCatatPenjualan = () => {
         grandTotal,
         handleSubmit,
         isSubmitting,
-        handleUpdateItemPrice
+        handleUpdateItemPrice,
+        handleUpdateItemQty
     };
 };
