@@ -45,15 +45,40 @@ class TransactionRepository
 
     public function getTransactionsByRange(string $startDate, string $endDate)
     {
-        return DB::table('TRX_PENJUALAN')
-            ->whereBetween('tanggal_beli', [$startDate, $endDate])
-            ->get();
+        return DB::select(
+            "SELECT
+                a.id_penjualan,  
+                a.id_cabang, 
+                b.nama_cabang, 
+                a.id_tipe_penjualan, 
+                c.nama_tipe_penjualan, 
+                a.id_pembayaran, 
+                d.nama_pembayaran, 
+                DATE_FORMAT(a.tanggal_beli, '%d-%m-%Y') as tanggal_beli, 
+                a.nama_pembeli, 
+                a.telp_pembeli
+            FROM trx_penjualan a 
+            JOIN master_cabang b on a.id_cabang = b.id_cabang
+            JOIN master_tipe_penjualan c on a.id_tipe_penjualan = c.id_tipe_penjualan
+            JOIN master_pembayaran d on a.id_pembayaran = d.id_pembayaran
+            WHERE a.tanggal_beli BETWEEN ? AND ?",
+            [$startDate, $endDate]
+        );
     }
 
     public function getDetailByPenjualanId(int $id_penjualan)
-    {
-        return DB::table('TRX_DETAIL_PENJUALAN')
-            ->where('id_penjualan', $id_penjualan)
-            ->get();
+{
+    return DB::select(
+            "SELECT 
+                a.id_item,
+                b.nama_item,
+                a.kuantitas,
+                a.harga
+            FROM trx_detail_penjualan a
+            JOIN master_items b 
+                ON a.id_item = b.id_item
+            WHERE a.id_penjualan = ?",
+            [$id_penjualan]
+        );
     }
 }

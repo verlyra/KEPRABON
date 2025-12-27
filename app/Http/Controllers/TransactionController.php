@@ -31,10 +31,13 @@ class TransactionController extends Controller
         );
     }
 
-    public function detail($id)
+    public function detail(Request $request)
     {
+        $validated = $request->validate([
+        'id' => 'required|integer',
+        ]);
         return Response::success(
-            $this->transactionService->getDetail($id)
+            $this->transactionService->getDetail($validated['id'])
         );
     }
 
