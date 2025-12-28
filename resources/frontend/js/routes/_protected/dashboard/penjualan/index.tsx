@@ -27,15 +27,16 @@ function CatatPenjualanPage() {
         inputQty, setInputQty,
         grandTotal,
         handleSubmit, isSubmitting,
-        handleUpdateItemPrice
+        handleUpdateItemPrice,
+        handleUpdateItemQty
     } = useCatatPenjualan();
 
     if (isLoading) return <div className="p-6">Loading form resources...</div>;
     if (isError) return <div className="p-6 text-red-500">Gagal memuat data form.</div>;
 
     return (
-        <div className="p-6 space-y-6">
-            <CardHeader className="px-0 pt-0">
+        <div className="p-6 space-y-6 pb-40">
+            <CardHeader className="p-0">
                 <CardTitle className="text-2xl font-bold">Catat Penjualan Baru</CardTitle>
             </CardHeader>
 
@@ -145,7 +146,7 @@ function CatatPenjualanPage() {
                         </div>
                         <Button 
                             size="lg" 
-                            className="bg-green-700 hover:bg-green-800 w-full sm:w-auto"
+                            className="bg-green-700 hover:bg-green-800 w-full sm:w-auto text-white"
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                         >
@@ -187,7 +188,7 @@ function CatatPenjualanPage() {
                                 onChange={(e) => setInputQty(e.target.value)}
                             />
                         </div>
-                        <Button onClick={handleAddItem} className="bg-blue-600 hover:bg-blue-700">
+                        <Button onClick={handleAddItem} className="bg-blue-500 hover:bg-blue-700 text-white">
                             <Plus className="w-4 h-4 mr-2" /> Tambah
                         </Button>
                     </div>
@@ -197,9 +198,9 @@ function CatatPenjualanPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nama Item</TableHead>
-                                    <TableHead className="text-right">Harga Satuan</TableHead>
-                                    <TableHead className="text-center w-[100px]">Qty</TableHead>
-                                    <TableHead className="text-right">Subtotal</TableHead>
+                                    <TableHead>Harga Satuan</TableHead>
+                                    <TableHead>Qty</TableHead>
+                                    <TableHead>Subtotal</TableHead>
                                     <TableHead className="w-[50px]"></TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -214,21 +215,28 @@ function CatatPenjualanPage() {
                                     cart.map((item, idx) => (
                                         <TableRow key={idx}>
                                             <TableCell>{item.nama}</TableCell>
-                                            <TableCell className="text-right">
+                                            <TableCell>
                                                 <Input 
                                                     type="number" 
                                                     min="0"
-                                                    className="text-right h-8" 
+                                                    className="h-8" 
                                                     value={item.transactionPrice}
                                                     onChange={(e) => handleUpdateItemPrice(idx, e.target.value)}
                                                 />
                                             </TableCell>
-                                            <TableCell className="text-center">{item.qty}</TableCell>
-                                            <TableCell className="text-right font-medium">
+                                            <TableCell>
+                                                <Input 
+                                                    type="number" 
+                                                    min="1"
+                                                    value={item.qty} 
+                                                    onChange={(e) => handleUpdateItemQty(idx, e.target.value)}
+                                                />
+                                            </TableCell>
+                                            <TableCell className="font-medium">
                                                 Rp {item.subtotal.toLocaleString('id-ID')}
                                             </TableCell>
                                             <TableCell>
-                                                <Button className='bg-red-500' variant="ghost" size="sm" onClick={() => handleRemoveItem(idx)}>
+                                                <Button className='bg-red-500' size="sm" onClick={() => handleRemoveItem(idx)}>
                                                     <Trash2 className="w-4 h-4 text-white" />
                                                 </Button>
                                             </TableCell>

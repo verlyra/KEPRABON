@@ -14,7 +14,7 @@ export const useMasterUsers = () => {
         nip: '', 
         nama: '', 
         password: '',
-        aktif: '1' 
+        // aktif: '1' 
     });
     
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -31,7 +31,7 @@ export const useMasterUsers = () => {
     const handleOpenCreate = () => {
         setDialogMode('create');
         setSelectedItem(null);
-        setFormData({ nip: '', nama: '', password: '', aktif: '1' });
+        setFormData({ nip: '', nama: '', password: '' });
         setIsDialogOpen(true);
     };
 
@@ -42,7 +42,7 @@ export const useMasterUsers = () => {
             nip: item.nip, 
             nama: item.nama, 
             password: '',
-            aktif: String(item.aktif)
+            // aktif: String(item.aktif)
         });
         setIsDialogOpen(true);
     };
@@ -54,14 +54,14 @@ export const useMasterUsers = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const payloadAktif = formData.aktif === '1';
+            // const payloadAktif = formData.aktif === '1';
 
             if (dialogMode === 'create') {
                 await createMutation.mutateAsync({ 
                     nip: formData.nip,
                     nama: formData.nama,
                     password: formData.password,
-                    aktif: payloadAktif
+                    // aktif: payloadAktif
                 });
                 toast.success('User berhasil ditambahkan');
             } else {
@@ -76,7 +76,7 @@ export const useMasterUsers = () => {
                         nip_new: formData.nip,    
                         nama: formData.nama,
                         password: formData.password,
-                        aktif: payloadAktif
+                        // aktif: payloadAktif
                     });
                     toast.success('User berhasil diperbarui');
                 }
