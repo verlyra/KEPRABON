@@ -52,4 +52,14 @@ class TransactionService
     {
         return $this->transactionRepository->storeTransaction($id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $nip);
     }
+
+    public function update(int $id_penjualan, int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool    
+    {
+        return $this->transactionRepository->updateTransaction($id_penjualan, $id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $nip);
+    }
+
+    public function delete(int $id_penjualan): bool
+    {
+        return $this->transactionRepository->deleteTransaction($id_penjualan);
+    }
 }
