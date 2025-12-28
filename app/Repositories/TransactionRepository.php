@@ -80,7 +80,7 @@ class TransactionRepository
     }
 
     public function getDetailByPenjualanId(int $id_penjualan)
-{
+    {
     return DB::select(
             "SELECT 
                 a.id_item,
@@ -93,5 +93,52 @@ class TransactionRepository
             WHERE a.id_penjualan = ?",
             [$id_penjualan]
         );
+    }
+
+   
+    public function updateTransaction(int $id_penjualan, int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool
+    {
+        DB::beginTransaction();
+        try {
+            DB::update("
+                UPDATE TRX_PENJUALAN 
+                SET id_cabang = ?, id_tipe_penjualan = ?, id_pembayaran = ?, tanggal_beli = ?, nama_pembeli = ?, telp_pembeli = ?, nip = ? 
+                WHERE id_penjualan = ?
+            ", [
+                $id_cabang, $id_tipe_penjualan, $id_pembayaran,
+                \Carbon\Carbon::createFromFormat('d-m-Y', $tanggal_beli)->format('Y-m-d 00:00:00'),
+                $nama_pembeli, $telp_pembeli, $nip, $id_penjualan
+            ]);
+
+            DB::delete("DELETE FROM TRX_DETAIL_PENJUALAN WHERE id_penjualan = ?", [$id_penjualan]);
+
+            foreach ($items as $item) {
+                DB::insert("
+                    INSERT INTO TRX_DETAIL_PENJUALAN (id_penjualan, id_item, kuantitas, harga) 
+                    VALUES (?, ?, ?, ?)
+                ", [$id_penjualan, $item['id_item'], $item['kuantitas'], $item['harga']]);
+            }
+
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+
+    public function deleteTransaction(int $id_penjualan): bool
+    {
+        DB::beginTransaction();
+        try {
+            DB::delete("DELETE FROM TRX_DETAIL_PENJUALAN WHERE id_penjualan = ?", [$id_penjualan]);
+            DB::delete("DELETE FROM TRX_PENJUALAN WHERE id_penjualan = ?", [$id_penjualan]);
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }
