@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { getTransactionList, getTransactionDetail } from './index';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getTransactionList, getTransactionDetail, updateTransaction, deleteTransaction } from './index';
 import { ReportFilterPayload } from '@/types/reports/penjualan';
 
 export const REPORT_KEYS = {
@@ -20,5 +20,25 @@ export const useGetTransactionDetail = (id: number | null, isOpen: boolean) => {
         queryKey: REPORT_KEYS.detail(id),
         queryFn: () => getTransactionDetail({ id: id! }),
         enabled: isOpen && id !== null,
+    });
+};
+
+export const useUpdateTransaction = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: updateTransaction,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['report', 'sales'] });
+        },
+    });
+};
+
+export const useDeleteTransaction = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: deleteTransaction,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['report', 'sales'] });
+        },
     });
 };

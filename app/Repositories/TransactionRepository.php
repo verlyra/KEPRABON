@@ -45,7 +45,7 @@ class TransactionRepository
 
     public function getTransactionsByRange(string $startDate, string $endDate)
     {
-        return DB::select(
+        $datas = DB::select(
             "SELECT
                 a.id_penjualan,  
                 a.id_cabang, 
@@ -77,6 +77,12 @@ class TransactionRepository
                 a.telp_pembeli",
             [$startDate, $endDate]
         );
+
+        foreach($datas as $data) {
+            $data->detail = $this->getDetailByPenjualanId($data->id_penjualan);
+        }
+
+        return $datas;
     }
 
     public function getDetailByPenjualanId(int $id_penjualan)
@@ -95,7 +101,6 @@ class TransactionRepository
         );
     }
 
-   
     public function updateTransaction(int $id_penjualan, int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool
     {
         DB::beginTransaction();

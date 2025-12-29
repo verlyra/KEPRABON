@@ -88,7 +88,9 @@ class TransactionController extends Controller
             "items" => 'required|array',
             "items.*.id_item" => 'required|integer',
             "items.*.kuantitas" => 'required|integer',
-            "items.*.harga" => 'required|numeric'
+            "items.*.harga" => 'required|numeric',
+            "nama_pembeli"=>'nullable|string|max:255',
+            "telp_pembeli"=>'nullable|string|max:20',
         ]);
 
         if ($validator->fails()) return Response::badRequest($validator->errors());
