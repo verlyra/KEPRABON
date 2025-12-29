@@ -15,6 +15,7 @@ export interface TransactionReportItem {
     nama_pembeli: string | null;
     telp_pembeli: string | null;
     total: string;
+    detail: TransactionDetailItem[]; 
 }
 
 export interface TransactionDetailItem {
@@ -26,4 +27,25 @@ export interface TransactionDetailItem {
 
 export interface DetailPayload {
     id: number;
+}
+
+export interface DeleteTransactionPayload {
+    id_penjualan: number;
+}
+
+export interface UpdateTransactionItemPayload {
+    id_item: number;
+    kuantitas: number;
+    harga: number;
+}
+
+export interface UpdateTransactionPayload {
+    id_penjualan: number;
+    id_cabang: number;
+    id_tipe_penjualan: number;
+    id_pembayaran: number;
+    tanggal_beli: string;
+    nama_pembeli?: string | null; 
+    telp_pembeli?: string | null;
+    items: UpdateTransactionItemPayload[];
 }
