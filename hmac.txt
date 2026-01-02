@@ -1,0 +1,464 @@
+Baik, saya akan menjelaskan kode ini dengan bahasa yang sederhana, seolah-olah saya sedang mengajar mahasiswa baru di kelas kriptografi. Mari kita mulai dengan analogi sederhana dulu!
+
+## 🎯 **Gambaran Besar: Kenapa Kode Ini Ada?**
+
+Bayangkan kamu mengirim surat rahasia ke temanmu. Bagaimana temanmu tahu bahwa:
+1. Surat itu **benar-benar dari kamu** (bukan orang lain yang menyamar)
+2. Isi surat **tidak diubah** di tengah jalan
+3. Surat itu **masih fresh** (bukan surat lama yang dicuri orang lalu dikirim ulang)
+
+Nah, kode ini melakukan hal yang sama untuk aplikasi web! Ini adalah **"penjaga pintu digital"** yang memverifikasi setiap request yang masuk.
+
+---
+
+## 🔧 **Bagian 1: Fungsi `rightRotate` - Si Pemutar Bit**
+
+```php
+private function rightRotate($value, $bits) {
+    return (($value >> $bits) | ($value << (32 - $bits))) & 0xFFFFFFFF;
+}
+```
+
+**Analogi sederhana:** Bayangkan kamu punya deretan 32 lampu (nyala/mati = 1/0). Fungsi ini "memutar" deretan lampu ke kanan.
+
+**Contoh:**
+- Lampu awal: `11010000...` (32 lampu)
+- Putar kanan 3 posisi: `00011010...`
+- Lampu yang "jatuh" dari kanan, muncul lagi di kiri (makanya disebut rotasi)
+
+**Kenapa penting?** 
+- SHA-256 butuh cara "mengacak" bit yang sangat kompleks
+- Rotasi bit adalah salah satu teknik mixing yang membuat output tidak bisa ditebak
+- Masking `& 0xFFFFFFFF` memastikan hasilnya tetap 32-bit (PHP kadang bikin angka lebih besar)
+
+---
+
+## 🏗️ **Bagian 2: Fungsi `sha256_custom` - Mesin Pencincang Digital**
+
+Ini adalah **INTI dari keamanan**. SHA-256 adalah fungsi hash yang mengubah data apapun menjadi "sidik jari" unik 256-bit (64 karakter hex).
+
+### **Properti Ajaib SHA-256:**
+1. **One-way:** Dari hash, kamu **TIDAK BISA** mundur ke data asli
+2. **Deterministic:** Input sama → hash sama
+3. **Avalanche effect:** Ubah 1 bit input → ~50% bit output berubah
+4. **Collision resistant:** Hampir mustahil 2 input berbeda menghasilkan hash sama
+
+### **Proses Step-by-Step:**
+
+#### **Step 1: Inisialisasi Nilai Awal**
+```php
+$H = [0x6a09e667, 0xbb67ae85, ...]; // 8 nilai hash awal
+$K = [0x428a2f98, 0x71374491, ...]; // 64 konstanta putaran
+```
+
+**Analogi:** Ini seperti "benih awal" untuk memasak. Nilai-nilai ini:
+- Berasal dari akar kuadrat bilangan prima (angka yang tidak bisa ditebak polanya)
+- Sama untuk semua orang di seluruh dunia (standar internasional)
+
+#### **Step 2: Padding (Penyesuaian Panjang)**
+```php
+$message[] = 0x80; // Tambah bit '1' di ujung
+while ((count($message) * 8) % 512 != 448) { 
+    $message[] = 0x00; // Tambah bit '0' sampai panjangnya pas
+}
+```
+
+**Analogi:** Seperti mengemas barang di kardus. Pesan harus pas kelipatan 512 bit, jadi kita tambahkan "bubble wrap" (padding):
+- Tambah `1` bit di ujung
+- Tambah bit `0` sampai panjangnya = 448 mod 512
+- Sisakan 64 bit terakhir untuk panjang pesan asli
+
+**Contoh:**
+- Pesan: "Hi" (16 bit)
+- Setelah padding: "Hi" + 1 + 000...000 + [panjang=16] → total 512 bit
+
+#### **Step 3: Message Schedule (Perluasan Pesan)**
+```php
+for ($j = 16; $j < 64; $j++) {
+    $s0 = rightRotate($W[$j-15], 7) ^ rightRotate($W[$j-15], 18) ^ ($W[$j-15] >> 3);
+    $s1 = rightRotate($W[$j-2], 17) ^ rightRotate($W[$j-2], 19) ^ ($W[$j-2] >> 10);
+    $W[$j] = ($W[$j-16] + $s0 + $W[$j-7] + $s1) & 0xFFFFFFFF;
+}
+```
+
+**Analogi:** Dari 16 "bahan dasar", kita buat 48 "bahan turunan" dengan cara:
+- Putar-putar bit (`rightRotate`)
+- XOR (operasi yang bikin bit "bercampur")
+- Geser bit (`>>`)
+
+Hasilnya: 64 "word" yang sudah sangat teracak!
+
+#### **Step 4: Compression Function (Pengacakan 64 Putaran)**
+```php
+for ($j = 0; $j < 64; $j++) {
+    $S1 = rightRotate($e, 6) ^ rightRotate($e, 11) ^ rightRotate($e, 25);
+    $ch = ($e & $f) ^ ((~$e) & $g); // Choose function
+    $temp1 = ($h + $S1 + $ch + $K[$j] + $W[$j]) & 0xFFFFFFFF;
+    
+    $S0 = rightRotate($a, 2) ^ rightRotate($a, 13) ^ rightRotate($a, 22);
+    $maj = ($a & $b) ^ ($a & $c) ^ ($b & $c); // Majority function
+    $temp2 = ($S0 + $maj) & 0xFFFFFFFF;
+    
+    // Geser variabel seperti rantai conveyor
+    $h=$g; $g=$f; $f=$e; $e=($d+$temp1); 
+    $d=$c; $c=$b; $b=$a; $a=($temp1+$temp2);
+}
+```
+
+**Analogi:** Bayangkan 8 mangkuk (a, b, c, d, e, f, g, h) berputar di conveyor belt. Setiap putaran:
+1. **Choose (Ch):** Jika `e` bilang "ya", pakai `f`, kalau "tidak", pakai `g`
+2. **Majority (Maj):** Vote dari `a`, `b`, `c` - yang menang dipakai
+3. Campur semuanya dengan konstanta `K[j]` dan data `W[j]`
+4. Geser posisi mangkuk
+
+Setelah 64 putaran → bit sudah **super teracak**!
+
+#### **Step 5: Akumulasi & Output**
+```php
+$H[0] = ($H[0] + $a) & 0xFFFFFFFF; 
+// ... tambahkan hasil ke nilai hash awal
+```
+
+Hasil akhir: **256-bit hash** (64 karakter hexadecimal)
+
+---
+
+## 🔐 **Bagian 3: Fungsi `hmac_custom` - Tanda Tangan Digital**
+
+HMAC = **Hash-based Message Authentication Code**
+
+**Masalah yang diselesaikan:** SHA-256 bisa bikin hash, tapi **siapapun** bisa bikin hash! Kita butuh cara bikin hash yang **hanya orang dengan kunci rahasia yang bisa bikin**.
+
+### **Formula HMAC:**
+```
+HMAC(data, key) = SHA256((key ⊕ opad) || SHA256((key ⊕ ipad) || data))
+```
+
+Di mana:
+- `ipad` = byte 0x36 diulang 64 kali (inner padding)
+- `opad` = byte 0x5c diulang 64 kali (outer padding)
+- `⊕` = operasi XOR
+- `||` = penggabungan string
+
+### **Proses Step-by-Step:**
+
+```php
+// 1. Jika kunci terlalu panjang, hash dulu
+if (strlen($key) > 64) {
+    $key = pack('H*', $this->sha256_custom($key));
+}
+
+// 2. Padding kunci jadi 64 byte
+$key = str_pad($key, 64, chr(0x00));
+
+// 3. XOR dengan inner/outer pad
+$ipad = str_repeat(chr(0x36), 64);
+$opad = str_repeat(chr(0x5c), 64);
+
+// 4. Hashing 2 lapis
+$inner_hash = SHA256((key ⊕ ipad) || data)
+$outer_hash = SHA256((key ⊕ opad) || inner_hash)
+```
+
+**Analogi:** 
+1. Kamu **mencampur kunci rahasia dengan data** (inner hash)
+2. Lalu **membungkus hasil dengan kunci lagi** (outer hash)
+3. Hasilnya: "tanda tangan" yang hanya bisa dibuat oleh orang dengan kunci yang sama!
+
+**Kenapa 2 lapis?** Melindungi dari **length extension attack** (serangan di mana penyerang bisa menambahkan data tanpa tahu kuncinya jika hanya 1 lapis).
+
+---
+
+## 🛡️ **Bagian 4: Middleware `handle` - Penjaga Gerbang**
+
+Ini adalah aplikasi nyata dari HMAC! Setiap kali ada request masuk, middleware ini:
+
+### **Step 1: Ambil Komponen**
+```php
+$clientSignature = $request->header('X-Signature');
+$clientTimestamp = $request->header('X-Timestamp');
+$masterSecret = config('microservices.API_CLIENT_SECRET');
+```
+
+**Analogi:** Client kirim 3 hal:
+1. **Signature** - "tanda tangan" mereka
+2. **Timestamp** - kapan mereka kirim
+3. **MasterSecret** - kunci rahasia (sudah disimpan di server)
+
+### **Step 2: Anti-Replay Attack**
+```php
+if (abs(time() - (int)$clientTimestamp) > 60) {
+    return HelperResponse::unauthorized('Configuration expired');
+}
+```
+
+**Analogi:** Seperti tiket kereta yang hanya valid 60 detik. Mencegah:
+- Orang mencuri request lama
+- Mengulang request yang sama berkali-kali (replay attack)
+
+### **Step 3: Hash Body Request**
+```php
+$bodyHash = $this->sha256_custom($body);
+```
+
+**Kenapa di-hash?** 
+- Body bisa sangat panjang (MB-an)
+- Hash selalu 256-bit, ringkas dan cepat diverifikasi
+- Melindungi integritas data (1 byte berubah → hash beda total)
+
+### **Step 4: Dynamic Key (Fitur Keamanan Ekstra!)**
+```php
+$dynamicKey = $this->hmac_custom($clientTimestamp, $masterSecret);
+$serverSignature = $this->hmac_custom($dataToSign, $dynamicKey);
+```
+
+**Ini BRILLIANT!** Kenapa?
+
+**Cara Biasa:**
+```
+signature = HMAC(data, masterSecret)
+```
+
+**Cara Kode Ini:**
+```
+dynamicKey = HMAC(timestamp, masterSecret)
+signature = HMAC(data, dynamicKey)
+```
+
+**Keuntungan:**
+1. **Setiap request punya kunci unik** (karena timestamp berbeda)
+2. **Jika 1 signature bocor**, penyerang cuma bisa pakai untuk timestamp itu saja
+3. **Lebih susah di-crack** karena ada 2 lapis HMAC
+
+### **Step 5: Verifikasi**
+```php
+if (!hash_equals($serverSignature, $clientSignature)) {
+    return HelperResponse::unauthorized('Invalid signature');
+}
+```
+
+**`hash_equals` vs `==`:**
+- `==` berhenti begitu ketemu perbedaan → bisa di-timing attack
+- `hash_equals` selalu cek semua karakter → aman dari timing attack
+
+**Timing Attack:** Penyerang ukur berapa lama server respon. Makin lama = makin banyak karakter yang cocok!
+
+---
+
+## 🎓 **Kesimpulan: Alur Lengkap**
+
+### **Di Sisi Client:**
+1. Siapkan data: method, URI, body
+2. Hash body dengan SHA-256
+3. Gabungkan: `dataToSign = method + URI + bodyHash`
+4. Buat dynamic key: `dynamicKey = HMAC(timestamp, masterSecret)`
+5. Buat signature: `signature = HMAC(dataToSign, dynamicKey)`
+6. Kirim request dengan header `X-Signature` dan `X-Timestamp`
+
+### **Di Sisi Server (Middleware Ini):**
+1. Terima request, ambil signature & timestamp dari header
+2. Cek timestamp (max 60 detik) → anti replay attack
+3. **Ulangi langkah 2-5 client**
+4. Bandingkan signature server vs client
+5. Jika cocok → request valid ✅
+6. Jika beda → tolak request ❌
+
+---
+
+## 🚨 **Keamanan yang Dijaga:**
+
+| Serangan | Perlindungan |
+|----------|--------------|
+| **Man-in-the-Middle** | Signature tidak bisa dipalsukan tanpa masterSecret |
+| **Data Tampering** | 1 bit berubah → hash & signature beda total |
+| **Replay Attack** | Timestamp expired dalam 60 detik |
+| **Timing Attack** | `hash_equals` constant-time comparison |
+| **Length Extension** | HMAC 2-lapis (inner + outer) |
+| **Key Reuse** | Dynamic key berbeda tiap request |
+
+---
+
+**Pertanyaan mahasiswa?** 😊
+
+
+
+
+Untuk mengimplementasikan validator HMAC menggunakan algoritma sha256_custom yang Anda berikan, kita perlu membangun fungsi HMAC secara manual.
+
+HMAC bekerja dengan rumus: HMAC = H(K XOR opad || H(K XOR ipad || message)).
+
+Berikut adalah implementasi Middleware Laravel-nya:
+
+1. Buat Middleware VerifyCustomHmac.php
+code
+PHP
+download
+content_copy
+expand_less
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use App\Helper\Response as HelperResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class VerifyCustomHmac
+{
+    /**
+     * Fungsi rotasi bit sesuai algoritma yang Anda berikan
+     */
+    private function rightRotate($value, $bits) {
+        return (($value >> $bits) | ($value << (32 - $bits))) & 0xFFFFFFFF;
+    }
+
+    /**
+     * Algoritma SHA256 Custom Anda
+     */
+    private function sha256_custom($message) {
+        $H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+        $K = [
+            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+        ];
+
+        $message = unpack('C*', $message);
+        $l = count($message) * 8;
+        $message[] = 0x80;
+        while ((count($message) * 8) % 512 != 448) { $message[] = 0x00; }
+        for ($i = 7; $i >= 0; $i--) { $message[] = ($l >> ($i * 8)) & 0xFF; }
+
+        for ($i = 0; $i < count($message); $i += 64) {
+            $W = [];
+            for ($j = 0; $j < 16; $j++) {
+                $W[$j] = ($message[$i + (4 * $j) + 1] << 24) | ($message[$i + (4 * $j) + 2] << 16) | ($message[$i + (4 * $j) + 3] << 8) | ($message[$i + (4 * $j) + 4]);
+            }
+            for ($j = 16; $j < 64; $j++) {
+                $s0 = $this->rightRotate($W[$j - 15], 7) ^ $this->rightRotate($W[$j - 15], 18) ^ ($W[$j - 15] >> 3);
+                $s1 = $this->rightRotate($W[$j - 2], 17) ^ $this->rightRotate($W[$j - 2], 19) ^ ($W[$j - 2] >> 10);
+                $W[$j] = ($W[$j - 16] + $s0 + $W[$j - 7] + $s1) & 0xFFFFFFFF;
+            }
+            $a = $H[0]; $b = $H[1]; $c = $H[2]; $d = $H[3]; $e = $H[4]; $f = $H[5]; $g = $H[6]; $h = $H[7];
+            for ($j = 0; $j < 64; $j++) {
+                $S1 = $this->rightRotate($e, 6) ^ $this->rightRotate($e, 11) ^ $this->rightRotate($e, 25);
+                $ch = ($e & $f) ^ ((~$e) & $g);
+                $temp1 = ($h + $S1 + $ch + $K[$j] + $W[$j]) & 0xFFFFFFFF;
+                $S0 = $this->rightRotate($a, 2) ^ $this->rightRotate($a, 13) ^ $this->rightRotate($a, 22);
+                $maj = ($a & $b) ^ ($a & $c) ^ ($b & $c);
+                $temp2 = ($S0 + $maj) & 0xFFFFFFFF;
+                $h = $g; $g = $f; $f = $e; $e = ($d + $temp1) & 0xFFFFFFFF; $d = $c; $c = $b; $b = $a; $a = ($temp1 + $temp2) & 0xFFFFFFFF;
+            }
+            $H[0] = ($H[0] + $a) & 0xFFFFFFFF; $H[1] = ($H[1] + $b) & 0xFFFFFFFF; $H[2] = ($H[2] + $c) & 0xFFFFFFFF; $H[3] = ($H[3] + $d) & 0xFFFFFFFF;
+            $H[4] = ($H[4] + $e) & 0xFFFFFFFF; $H[5] = ($H[5] + $f) & 0xFFFFFFFF; $H[6] = ($H[6] + $g) & 0xFFFFFFFF; $H[7] = ($H[7] + $h) & 0xFFFFFFFF;
+        }
+
+        $result = "";
+        foreach ($H as $value) { $result .= str_pad(dechex($value), 8, "0", STR_PAD_LEFT); }
+        return $result;
+    }
+
+    /**
+     * Implementasi Manual HMAC menggunakan SHA256 Custom
+     */
+    private function hmac_custom($data, $key) {
+        $block_size = 64;
+        if (strlen($key) > $block_size) {
+            $key = pack('H*', $this->sha256_custom($key));
+        }
+        $key = str_pad($key, $block_size, chr(0x00));
+        
+        $ipad = str_repeat(chr(0x36), $block_size);
+        $opad = str_repeat(chr(0x5c), $block_size);
+        
+        $inner_hash = pack('H*', $this->sha256_custom(($key ^ $ipad) . $data));
+        $outer_hash = $this->sha256_custom(($key ^ $opad) . $inner_hash);
+        
+        return $outer_hash;
+    }
+
+    public function handle(Request $request, Closure $next): Response
+    {
+        $clientSignature = $request->header('X-Signature');
+        $clientTimestamp = $request->header('X-Timestamp');
+        $masterSecret = config('microservices.API_CLIENT_SECRET');
+
+        // Bypass untuk local development
+        if(in_array($request->getHost(), ['localhost', '127.0.0.1'])){
+            return $next($request);
+        }
+
+        if (!$clientSignature || !$clientTimestamp || !$masterSecret) {
+            return HelperResponse::unauthorized('Missing configuration');
+        }
+
+        // Cek kadaluarsa (toleransi 60 detik)
+        if (abs(time() - (int)$clientTimestamp) > 60) {
+            return HelperResponse::unauthorized('Configuration expired');
+        }
+
+        $method = strtoupper($request->getMethod());
+        $uri = $request->getRequestUri();
+        $body = $request->getContent();
+
+        // 1. Hash body menggunakan SHA256 Custom (sebelumnya MD5)
+        $bodyHash = $this->sha256_custom($body);
+        
+        // 2. Susun data yang akan di-sign
+        $dataToSign = $method . $uri . $bodyHash;
+
+        // 3. Buat signature server menggunakan algoritma Custom
+        // Step A: Buat dynamic key dari timestamp
+        $dynamicKey = $this->hmac_custom($clientTimestamp, $masterSecret);
+        
+        // Step B: Buat signature akhir
+        $serverSignature = $this->hmac_custom($dataToSign, $dynamicKey);
+
+        // 4. Bandingkan signature
+        if (!hash_equals($serverSignature, $clientSignature)) {
+            return HelperResponse::unauthorized('Invalid signature');
+        }
+
+        return $next($request);
+    }
+}
+Penjelasan Perubahan:
+
+Metode sha256_custom: Saya memasukkan logika algoritma SHA256 yang Anda berikan ke dalam middleware sebagai fungsi private.
+
+Metode hmac_custom: Karena Laravel/PHP menggunakan hash_hmac bawaan yang berbasis C, dia tidak bisa langsung memakai fungsi PHP custom Anda. Oleh karena itu, saya buatkan fungsi manual HMAC yang mengikuti standar RFC 2104 agar bisa menggunakan sha256_custom sebagai hashing engine-nya.
+
+Body Hashing: Di referensi Anda menggunakan md5($body). Dalam standar keamanan yang lebih ketat (SHA256), saya mengubahnya menjadi $this->sha256_custom($body) agar konsisten menggunakan SHA256 di semua lini.
+
+Konversi Hex/Binary: Fungsi SHA256 Anda mengembalikan string Hex. Untuk proses HMAC (XOR), data harus diubah kembali ke bentuk Binary menggunakan pack('H*', ...).
+
+hash_equals: Tetap digunakan untuk membandingkan signature guna mencegah timing attacks.
+
+Cara Registrasi Middleware:
+
+Buka app/Http/Kernel.php (atau bootstrap/app.php di Laravel 11+) dan daftarkan middleware tersebut:
+
+code
+PHP
+download
+content_copy
+expand_less
+protected $middlewareAliases = [
+    // ...
+    'hmac.custom' => \App\Http\Middleware\VerifyCustomHmac::class,
+];
+
+Lalu gunakan di route transaksi Anda:
+
+Route::middleware(['hmac.custom'])->group(function () {
+    Route::prefix('transaction')->group(function () {
+        Route::put('/update', [\App\Http\Controllers\TransactionController::class, 'update']);
+        Route::delete('/delete', [\App\Http\Controllers\TransactionController::class, 'delete']);
+    });
+});

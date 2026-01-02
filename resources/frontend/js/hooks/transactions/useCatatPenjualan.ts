@@ -38,21 +38,13 @@ export const useCatatPenjualan = () => {
         
         const qty = parseInt(inputQty);
         const hargaMaster = parseFloat(itemMaster.harga);
-        const existingIndex = cart.findIndex(c => c.id === itemMaster.id);
 
-        if (existingIndex >= 0) {
-            const newCart = [...cart];
-            newCart[existingIndex].qty += qty;
-            newCart[existingIndex].subtotal = newCart[existingIndex].qty * newCart[existingIndex].transactionPrice;
-            setCart(newCart);
-        } else {
-            setCart(prev => [...prev, {
-                ...itemMaster,
-                qty: qty,
-                transactionPrice: hargaMaster,
-                subtotal: qty * hargaMaster
-            }]);
-        }
+        setCart(prev => [...prev, {
+            ...itemMaster,
+            qty: qty,
+            transactionPrice: hargaMaster,
+            subtotal: qty * hargaMaster
+        }]);
 
         setSelectedItemId('');
         setInputQty('1');
@@ -107,7 +99,7 @@ export const useCatatPenjualan = () => {
                 items: cart.map(item => ({
                     id_item: item.id,
                     kuantitas: item.qty,
-                    harga: item.harga
+                    harga: item.transactionPrice
                 }))
             });
 
@@ -126,6 +118,14 @@ export const useCatatPenjualan = () => {
         }
     };
 
+    const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+
+    const getSelectedItemLabel = () => {
+        if (!selectedItemId) return "";
+        const item = formResource?.items.find(i => i.id.toString() === selectedItemId);
+        return item ? `${item.nama} - Rp ${parseFloat(item.harga).toLocaleString('id-ID')}` : "";
+    };
+
     return {
         formResource,
         isLoading,
@@ -138,6 +138,8 @@ export const useCatatPenjualan = () => {
         handleSubmit,
         isSubmitting,
         handleUpdateItemPrice,
-        handleUpdateItemQty
+        handleUpdateItemQty,
+        isItemModalOpen, setIsItemModalOpen,
+        getSelectedItemLabel
     };
 };

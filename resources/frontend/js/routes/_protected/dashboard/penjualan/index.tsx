@@ -7,12 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, Trash2, Plus, Save, Loader2 } from "lucide-react";
+import { CalendarIcon, Trash2, Plus, Save, Loader2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 import { useCatatPenjualan } from '@/hooks/transactions/useCatatPenjualan';
+import { ItemSearchModal } from '@/components/shared/ItemSearchModal';
 
 export const Route = createFileRoute('/_protected/dashboard/penjualan/')({
     component: CatatPenjualanPage,
@@ -28,7 +29,9 @@ function CatatPenjualanPage() {
         grandTotal,
         handleSubmit, isSubmitting,
         handleUpdateItemPrice,
-        handleUpdateItemQty
+        handleUpdateItemQty,
+        isItemModalOpen, setIsItemModalOpen,
+        getSelectedItemLabel
     } = useCatatPenjualan();
 
     if (isLoading) return <div className="p-6">Loading form resources...</div>;
@@ -80,6 +83,8 @@ function CatatPenjualanPage() {
                                         selected={formData.tanggal_beli}
                                         onSelect={(date) => date && handleHeaderChange('tanggal_beli', date)}
                                         initialFocus
+                                        locale={idLocale}
+                                        captionLayout='dropdown'
                                     />
                                 </PopoverContent>
                             </Popover>
@@ -166,18 +171,15 @@ function CatatPenjualanPage() {
                     <div className="flex flex-col sm:flex-row gap-4 items-end p-4 rounded-md border">
                         <div className="space-y-2 flex-1 w-full">
                             <Label>Pilih Item</Label>
-                            <Select value={selectedItemId} onValueChange={setSelectedItemId}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Cari item..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {formResource?.items.map(item => (
-                                        <SelectItem key={item.id} value={item.id.toString()}>
-                                            {item.nama} - Rp {parseFloat(item.harga).toLocaleString('id-ID')}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <div className="relative cursor-pointer" onClick={() => setIsItemModalOpen(true)}>
+                                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input 
+                                    readOnly 
+                                    placeholder="Klik untuk cari item..." 
+                                    value={getSelectedItemLabel()}
+                                    className="pl-9 cursor-pointer hover:bg-slate-100"
+                                />
+                            </div>
                         </div>
                         <div className="space-y-2 w-full sm:w-[150px]">
                             <Label>Qty</Label>
@@ -248,6 +250,13 @@ function CatatPenjualanPage() {
                     </div>
                 </CardContent>
             </Card>
+
+            <ItemSearchModal
+                isOpen={isItemModalOpen}
+                onOpenChange={setIsItemModalOpen}
+                items={formResource?.items}
+                onSelect={(item) => setSelectedItemId(item.id.toString())}
+            />
         </div>
     );
 }
