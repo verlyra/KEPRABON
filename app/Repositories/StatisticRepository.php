@@ -54,12 +54,12 @@ class StatisticRepository
     {
         $data = DB::select("SELECT
                 c.nama_cabang as label,
-                SUM(d.kuantitas * d.harga) AS value
-            FROM trx_penjualan p
-            JOIN trx_detail_penjualan d 
-                ON p.id_penjualan = d.id_penjualan
-            JOIN master_cabang c 
+                COALESCE(SUM(d.kuantitas * d.harga), 0) AS value
+            FROM master_cabang c
+            LEFT JOIN trx_penjualan p 
                 ON p.id_cabang = c.id_cabang
+            LEFT JOIN trx_detail_penjualan d
+                ON p.id_penjualan = d.id_penjualan
             GROUP BY c.id_cabang, c.nama_cabang
             ORDER BY 2 DESC");
 
@@ -74,7 +74,7 @@ class StatisticRepository
             FROM trx_penjualan p
             JOIN trx_detail_penjualan d 
                 ON p.id_penjualan = d.id_penjualan
-            WHERE p.tanggal_beli >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+            WHERE p.tanggal_beli >= DATE_SUB('2024-09-30', INTERVAL 30 DAY)
             GROUP BY DATE(p.tanggal_beli)
             ORDER BY 1");
 

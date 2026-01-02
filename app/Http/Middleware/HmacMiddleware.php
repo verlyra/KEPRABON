@@ -15,7 +15,7 @@ class HmacMiddleware
     }
 
     /**
-     * Algoritma SHA256 Custom
+     * Algoritma SHA256 Custom (FIXED)
      */
     private function sha256_custom($message)
     {
@@ -43,41 +43,58 @@ class HmacMiddleware
             0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
         ];
 
-        $message = unpack('C*', $message);
+        // Konversi string ke array bytes
+        $message = array_values(unpack('C*', $message));
         $l = count($message) * 8;
-        //padding
+        
+        // Padding
         $message[] = 0x80;
 
         while ((count($message) * 8) % 512 !== 448) {
             $message[] = 0x00;
         }
 
+        // Append length (64-bit big-endian)
         for ($i = 7; $i >= 0; $i--) {
             $message[] = ($l >> ($i * 8)) & 0xFF;
         }
 
+        // Process message dalam 512-bit chunks
         for ($i = 0; $i < count($message); $i += 64) {
             $W = [];
-            //message schedule (16 word pertama dari blok)
+            
+            // Message schedule (16 word pertama dari blok)
             for ($j = 0; $j < 16; $j++) {
+                $idx0 = $i + (4 * $j) + 0;
+                $idx1 = $i + (4 * $j) + 1;
+                $idx2 = $i + (4 * $j) + 2;
+                $idx3 = $i + (4 * $j) + 3;
+                
+                // Cek bounds sebelum akses
+                if (!isset($message[$idx0]) || !isset($message[$idx1]) || 
+                    !isset($message[$idx2]) || !isset($message[$idx3])) {
+                    break 2; // Keluar dari kedua loop
+                }
+                
                 $W[$j] =
-                    ($message[$i + (4 * $j) + 0] << 24) |
-                    ($message[$i + (4 * $j) + 1] << 16) |
-                    ($message[$i + (4 * $j) + 2] << 8)  |
-                    ($message[$i + (4 * $j) + 3]);
+                    ($message[$idx0] << 24) |
+                    ($message[$idx1] << 16) |
+                    ($message[$idx2] << 8)  |
+                    ($message[$idx3]);
             }
-            //message schedule (16 word awal dikembangkan menjai 64 word)
+            
+            // Message schedule (extend 16 words menjadi 64 words)
             for ($j = 16; $j < 64; $j++) {
-                $s0 = //sigma kecil 0
+                $s0 = 
                     $this->rightRotate($W[$j - 15], 7) ^
                     $this->rightRotate($W[$j - 15], 18) ^
                     ($W[$j - 15] >> 3);
 
-                $s1 = //sigma kecil 1
+                $s1 = 
                     $this->rightRotate($W[$j - 2], 17) ^
                     $this->rightRotate($W[$j - 2], 19) ^
                     ($W[$j - 2] >> 10);
-                //W[j] dihitung
+                
                 $W[$j] = (
                     $W[$j - 16] +
                     $s0 +
@@ -95,15 +112,15 @@ class HmacMiddleware
             $g = $H[6];
             $h = $H[7];
 
-            //compression function main loop
+            // Compression function main loop
             for ($j = 0; $j < 64; $j++) {
-                $S1 = //sigma besar 1
+                $S1 = 
                     $this->rightRotate($e, 6) ^
                     $this->rightRotate($e, 11) ^
                     $this->rightRotate($e, 25);
-                //choose
+                
                 $ch = ($e & $f) ^ ((~$e) & $g);
-                //campur nilai
+                
                 $temp1 = (
                     $h +
                     $S1 +
@@ -112,15 +129,15 @@ class HmacMiddleware
                     $W[$j]
                 ) & 0xFFFFFFFF;
                 
-                $S0 = //sigma besar 0
+                $S0 = 
                     $this->rightRotate($a, 2) ^
                     $this->rightRotate($a, 13) ^
                     $this->rightRotate($a, 22);
-                //majority
+                
                 $maj = ($a & $b) ^ ($a & $c) ^ ($b & $c);
-                //campur nilai sigma besar 0 dan majority
                 $temp2 = ($S0 + $maj) & 0xFFFFFFFF;
-                //rotasi nilai
+                
+                // Rotate values
                 $h = $g;
                 $g = $f;
                 $f = $e;
@@ -181,12 +198,12 @@ class HmacMiddleware
     {
         $clientSignature = $request->header('X-Signature');
         $clientTimestamp = $request->header('X-Timestamp');
-        $masterSecret = config('microservices.API_CLIENT_SECRET');
+        $masterSecret = 'abcd';
 
         // Bypass untuk local development
-        if (in_array($request->getHost(), ['localhost', '127.0.0.1'])) {
-            return $next($request);
-        }
+        // if (in_array($request->getHost(), ['localhost', '127.0.0.1'])) {
+        //     return $next($request);
+        // }
 
         if (!$clientSignature || !$clientTimestamp || !$masterSecret) {
             return HelperResponse::unauthorized('Missing configuration');
@@ -209,6 +226,7 @@ class HmacMiddleware
 
         // 3. Signature
         $dynamicKey = $this->hmac_custom($clientTimestamp, $masterSecret);
+        
         $serverSignature = $this->hmac_custom($dataToSign, $dynamicKey);
 
         // 4. Verifikasi
