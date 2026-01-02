@@ -14,9 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            
         ]);
         $middleware->alias([
             'tokenValidator' => \App\Http\Middleware\ValidateApiToken::class,
+            'hmacValidator' => \App\Http\Middleware\HmacMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
