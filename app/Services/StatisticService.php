@@ -17,7 +17,7 @@ class StatisticService
 
         $forecasting = Forecasting::SES(
             data: $data_forecast->toArray(),
-            alpha: 0.3,
+            alpha: 0.2,
             days: 3
         );
         

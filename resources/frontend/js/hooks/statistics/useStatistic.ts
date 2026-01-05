@@ -18,7 +18,7 @@ export const useStatistic = () => {
 
         const chartData: any[] = [];
         const chartConfig: ChartConfig = {
-            omset: { label: "Omset" } // Base config
+            omset: { label: "Omset" }
         };
 
         data.performa_cabang.forEach((item, index) => {
@@ -56,14 +56,14 @@ export const useStatistic = () => {
             isForecast: true
         }));
 
-        if (actualData.length > 0 && forecastData.length > 0) {
-            const lastActual = actualData[actualData.length - 1];
-            forecastData.unshift({
-                date: lastActual.date,
-                value: lastActual.value,
-                isForecast: true
-            });
-        }
+        // if (actualData.length > 0 && forecastData.length > 0) {
+        //     const lastActual = actualData[actualData.length - 1];
+        //     forecastData.unshift({
+        //         date: lastActual.date,
+        //         value: lastActual.value,
+        //         isForecast: true
+        //     });
+        // }
 
         return [...actualData, ...forecastData];
     }, [data]);

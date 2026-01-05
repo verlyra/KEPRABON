@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 import { DateRange } from "react-day-picker";
 import { useDeleteTransaction, useGetTransactionList } from '@/api/report/hooks';
 import { toast } from '@/lib/swal';
@@ -116,7 +116,7 @@ export const useLaporanPenjualan = () => {
 
         let excelRows: any[] = [];
         let mergeConfig: XLSX.Range[] = [];
-        let currentRowIndex = 1;
+        let currentRowIndex = 1; 
 
         filteredData.forEach(transaction => {
             const details = transaction.detail && transaction.detail.length > 0 
@@ -127,24 +127,27 @@ export const useLaporanPenjualan = () => {
 
             details.forEach((item, idx) => {
                 const isFirst = idx === 0;
+                const qty = parseFloat(item.kuantitas) || 0;
+                const hargaSatuan = parseFloat(item.harga) || 0;
+                const subtotalItem = qty * hargaSatuan;
 
                 excelRows.push({
-                    "No Transaksi": isFirst ? transaction.id_penjualan : "",
                     "Tanggal": isFirst ? transaction.tanggal_beli : "",
                     "Cabang": isFirst ? transaction.nama_cabang : "",
                     "Tipe": isFirst ? transaction.nama_tipe_penjualan : "",
                     "Metode Bayar": isFirst ? transaction.nama_pembayaran : "",
                     "Pembeli": isFirst ? (transaction.nama_pembeli || '-') : "",
-                    "No. Telp": isFirst ? (transaction.telp_pembeli || '-') : "",
+                    "No. Telp": isFirst ? (transaction.telp_pembeli || '-') : "",                    
                     "Nama Item": item.nama_item || '-',
-                    "Qty": parseFloat(item.kuantitas),
-                    "Subtotal Item (Rp)": parseFloat(item.harga),
+                    "Harga Item (Rp)": hargaSatuan,
+                    "Qty": qty,
+                    "Subtotal Item": subtotalItem, 
                     "Total Transaksi (Rp)": isFirst ? parseFloat(transaction.total) : ""
                 });
             });
 
             if (rowCount > 1) {
-                const columnsToMerge = [0, 1, 2, 3, 4, 5, 6, 10]; 
+                const columnsToMerge = [0, 1, 2, 3, 4, 5, 10]; 
 
                 columnsToMerge.forEach(colIndex => {
                     mergeConfig.push({
@@ -156,10 +159,70 @@ export const useLaporanPenjualan = () => {
             currentRowIndex += rowCount;
         });
 
+        const grandTotal = filteredData.reduce((sum, item) => sum + parseFloat(item.total || '0'), 0);
+
+        excelRows.push({
+            "Tanggal": "GRAND TOTAL", 
+            "Cabang": "", "Tipe": "", "Metode Bayar": "", "Pembeli": "", "No. Telp": "", 
+            "Nama Item": "", "Harga Item (Rp)": "", "Qty": "", "Subtotal Item": "",
+            "Total Transaksi (Rp)": grandTotal
+        });
+
+        mergeConfig.push({
+            s: { r: currentRowIndex, c: 0 }, 
+            e: { r: currentRowIndex, c: 9 }  
+        });
+
         const worksheet = XLSX.utils.json_to_sheet(excelRows);
+        const range = XLSX.utils.decode_range(worksheet['!ref'] || "A1:A1");
+
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+                const cell = worksheet[cellAddress];
+
+                if (!cell) continue;
+
+                if (R === 0) {
+                    cell.s = { 
+                        font: { bold: true, sz: 12 },
+                        alignment: { horizontal: "center", vertical: "center" },
+                        fill: { fgColor: { rgb: "E9E9E9" } },
+                        border: { bottom: { style: "thin", color: { auto: 1 } } }
+                    };
+                }
+
+                if (R === range.e.r) {
+                    cell.s = { 
+                        font: { bold: true, sz: 12 },
+                        alignment: { vertical: "center" },
+                        border: { top: { style: "medium", color: { auto: 1 } } }
+                    };
+                    if (C === 0) {
+                        cell.s.alignment = { horizontal: "center", vertical: "center" };
+                    }
+                }
+
+                if (R > 0 && (C === 7 || C === 9 || C === 10)) {
+                    cell.z = '#,##0'; 
+                }
+                
+                if (R > 0 && R !== range.e.r && (C === 0 || C === 8)) {
+                    if (!cell.s) cell.s = {};
+                    cell.s.alignment = { horizontal: "center", vertical: "center" };
+                }
+                
+                if (R > 0 && R !== range.e.r) {
+                    if (!cell.s) cell.s = {};
+                    if (!cell.s.alignment) cell.s.alignment = {};
+                    cell.s.alignment.vertical = "top";
+                }
+            }
+        }
+
         worksheet['!merges'] = mergeConfig;
+        
         worksheet['!cols'] = [
-            { wch: 10 },
             { wch: 15 },
             { wch: 20 },
             { wch: 15 },
@@ -167,13 +230,15 @@ export const useLaporanPenjualan = () => {
             { wch: 20 },
             { wch: 15 },
             { wch: 25 },
+            { wch: 15 },
             { wch: 8 }, 
             { wch: 20 },
-            { wch: 20 },
+            { wch: 25 },
         ];
+
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Penjualan");
-        const fileName = `Laporan_Merged_${filters.start_date}_sd_${filters.end_date}.xlsx`;
+        const fileName = `Laporan_${filters.start_date}_sd_${filters.end_date}.xlsx`;
         XLSX.writeFile(workbook, fileName);
     };
 

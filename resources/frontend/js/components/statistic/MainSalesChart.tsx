@@ -29,17 +29,13 @@ export function MainSalesChart({ data, splitOffset, mape, alpha }: Props) {
                 <ChartContainer config={chartConfig} className="min-h-[300px] max-h-[400px] w-full">
                     <AreaChart data={data} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                         <defs>
-                            {/* GRADIENT UNTUK GARIS (STROKE) */}
                             <linearGradient id="splitColor" x1="0" y1="0" x2="1" y2="0">
                                 <stop offset={splitOffset} stopColor="hsl(142.1 76.2% 36.3%)" stopOpacity={1} />
                                 <stop offset={splitOffset} stopColor="hsl(32 95% 44%)" stopOpacity={1} />
                             </linearGradient>
 
-                            {/* GRADIENT UNTUK ISI (FILL) */}
                             <linearGradient id="splitFill" x1="0" y1="0" x2="1" y2="0">
-                                {/* Bagian Hijau */}
                                 <stop offset={splitOffset} stopColor="hsl(142.1 76.2% 36.3%)" stopOpacity={0.3} />
-                                {/* Bagian Oranye */}
                                 <stop offset={splitOffset} stopColor="hsl(32 95% 44%)" stopOpacity={0.3} />
                             </linearGradient>
                         </defs>
