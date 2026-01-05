@@ -15,9 +15,7 @@ Route::middleware(['hmacValidator'])->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index']);
         Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout']);
 
-        Route::prefix('statistic')->group(function () {
-            //isi statistic
-        });
+        Route::get('/statistic', [\App\Http\Controllers\DashboardController::class, 'statistic']);
         
         Route::prefix('master')->group(function () {
             Route::prefix('cabang')->group(function () {

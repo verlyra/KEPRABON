@@ -38,6 +38,6 @@ export interface StoreTransactionPayload {
     items: {
         id_item: number;
         kuantitas: number;
-        harga: string;
+        harga: number;
     }[];
 }
