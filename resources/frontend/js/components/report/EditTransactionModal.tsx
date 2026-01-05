@@ -95,21 +95,13 @@ export function EditTransactionModal({ isOpen, onOpenChange, transaction }: Edit
         const qty = parseInt(inputQty);
         const hargaMaster = parseFloat(itemMaster.harga);
         
-        const existingIdx = cart.findIndex(c => c.id_item === itemMaster.id);
-        if (existingIdx >= 0) {
-            const newCart = [...cart];
-            newCart[existingIdx].qty += qty;
-            newCart[existingIdx].subtotal = newCart[existingIdx].qty * newCart[existingIdx].harga_satuan;
-            setCart(newCart);
-        } else {
-            setCart(prev => [...prev, {
-                id_item: itemMaster.id,
-                nama_item: itemMaster.nama,
-                harga_satuan: hargaMaster,
-                qty: qty,
-                subtotal: qty * hargaMaster
-            }]);
-        }
+        setCart(prev => [...prev, {
+            id_item: itemMaster.id,
+            nama_item: itemMaster.nama,
+            harga_satuan: hargaMaster,
+            qty: qty,
+            subtotal: qty * hargaMaster
+        }]);
         setSelectedItemId('');
         setInputQty('1');
     };
