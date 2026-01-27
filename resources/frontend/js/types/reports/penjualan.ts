@@ -14,6 +14,7 @@ export interface TransactionReportItem {
     tanggal_beli: string;
     nama_pembeli: string | null;
     telp_pembeli: string | null;
+    alamat: string | null;
     total: string;
     detail: TransactionDetailItem[]; 
 }
@@ -47,5 +48,6 @@ export interface UpdateTransactionPayload {
     tanggal_beli: string;
     nama_pembeli?: string | null; 
     telp_pembeli?: string | null;
+    alamat?: string | null;
     items: UpdateTransactionItemPayload[];
 }

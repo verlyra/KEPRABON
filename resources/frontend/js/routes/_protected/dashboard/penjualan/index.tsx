@@ -14,6 +14,7 @@ import { id as idLocale } from "date-fns/locale";
 
 import { useCatatPenjualan } from '@/hooks/transactions/useCatatPenjualan';
 import { ItemSearchModal } from '@/components/shared/ItemSearchModal';
+import { Textarea } from '@/components/ui/textarea';
 
 export const Route = createFileRoute('/_protected/dashboard/penjualan/')({
     component: CatatPenjualanPage,
@@ -137,6 +138,14 @@ function CatatPenjualanPage() {
                                 onChange={(e) => handleHeaderChange('telp_pembeli', e.target.value)}
                                 placeholder="Contoh: 0812345678"
                                 type="tel"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Alamat</Label>
+                            <Textarea
+                                value={formData.alamat}
+                                onChange={(e) => handleHeaderChange('alamat', e.target.value)}
+                                placeholder="Contoh: Jl. Raya No. 123"
                             />
                         </div>
                     </CardContent>

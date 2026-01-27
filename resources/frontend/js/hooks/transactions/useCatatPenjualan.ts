@@ -14,7 +14,8 @@ export const useCatatPenjualan = () => {
         id_pembayaran: '',
         tanggal_beli: new Date(),
         nama_pembeli: '',
-        telp_pembeli: ''
+        telp_pembeli: '',
+        alamat: ''
     });
 
     const [cart, setCart] = useState<CartItem[]>([]);
@@ -96,6 +97,7 @@ export const useCatatPenjualan = () => {
                 tanggal_beli: format(formData.tanggal_beli, 'dd-MM-yyyy'),
                 nama_pembeli: formData.nama_pembeli.trim() === '' ? null : formData.nama_pembeli,
                 telp_pembeli: formData.telp_pembeli.trim() === '' ? null : formData.telp_pembeli,
+                alamat: formData.alamat.trim() === '' ? null : formData.alamat,
                 items: cart.map(item => ({
                     id_item: item.id,
                     kuantitas: item.qty,

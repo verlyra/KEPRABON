@@ -59,7 +59,8 @@ class TransactionController extends Controller
             "items"=>'required|array',
             "items.*.id_item"=>'required|integer',
             "items.*.kuantitas"=>'required|integer',
-            "items.*.harga"=>'required|numeric'
+            "items.*.harga"=>'required|numeric',
+            "alamat" => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) return Response::badRequest($validator->errors());
@@ -72,9 +73,10 @@ class TransactionController extends Controller
         $nama_pembeli = $validated['nama_pembeli'];
         $telp_pembeli = $validated['telp_pembeli'];
         $items = $validated['items'];
+        $alamat = $validated['alamat'];
         $user = $request->attributes->get('auth_user');
         
-        return Response::success($this->transactionService->store($id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $user->nip));
+        return Response::success($this->transactionService->store($id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $user->nip, $alamat));
     }
 
     public function update(Request $request)
@@ -91,6 +93,7 @@ class TransactionController extends Controller
             "items.*.harga" => 'required|numeric',
             "nama_pembeli"=>'nullable|string|max:255',
             "telp_pembeli"=>'nullable|string|max:20',
+            "alamat" => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) return Response::badRequest($validator->errors());
@@ -101,7 +104,7 @@ class TransactionController extends Controller
         $result = $this->transactionService->update(
             $v['id_penjualan'], $v['id_cabang'], $v['id_tipe_penjualan'], 
             $v['id_pembayaran'], $v['tanggal_beli'], $v['nama_pembeli'] ?? null, 
-            $v['telp_pembeli'] ?? null, $v['items'], $user->nip
+            $v['telp_pembeli'] ?? null, $v['items'], $user->nip, $v['alamat'] ?? null
         );
 
         return Response::success($result);
