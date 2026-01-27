@@ -48,14 +48,14 @@ class TransactionService
         ];
     }
 
-    public function store(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool    
+    public function store(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip, string|null $alamat): bool    
     {
-        return $this->transactionRepository->storeTransaction($id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $nip);
+        return $this->transactionRepository->storeTransaction($id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $nip, $alamat);
     }
 
-    public function update(int $id_penjualan, int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool    
+    public function update(int $id_penjualan, int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip, string|null $alamat): bool    
     {
-        return $this->transactionRepository->updateTransaction($id_penjualan, $id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $nip);
+        return $this->transactionRepository->updateTransaction($id_penjualan, $id_cabang, $id_tipe_penjualan, $id_pembayaran, $tanggal_beli, $nama_pembeli, $telp_pembeli, $items, $nip, $alamat);
     }
 
     public function delete(int $id_penjualan): bool

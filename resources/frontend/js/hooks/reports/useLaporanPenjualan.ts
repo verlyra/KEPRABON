@@ -137,7 +137,8 @@ export const useLaporanPenjualan = () => {
                     "Tipe": isFirst ? transaction.nama_tipe_penjualan : "",
                     "Metode Bayar": isFirst ? transaction.nama_pembayaran : "",
                     "Pembeli": isFirst ? (transaction.nama_pembeli || '-') : "",
-                    "No. Telp": isFirst ? (transaction.telp_pembeli || '-') : "",                    
+                    "No. Telp": isFirst ? (transaction.telp_pembeli || '-') : "",        
+                    "Alamat": isFirst ? (transaction.alamat || '-') : "",
                     "Nama Item": item.nama_item || '-',
                     "Harga Item (Rp)": hargaSatuan,
                     "Qty": qty,
@@ -163,7 +164,7 @@ export const useLaporanPenjualan = () => {
 
         excelRows.push({
             "Tanggal": "GRAND TOTAL", 
-            "Cabang": "", "Tipe": "", "Metode Bayar": "", "Pembeli": "", "No. Telp": "", 
+            "Cabang": "", "Tipe": "", "Metode Bayar": "", "Pembeli": "", "No. Telp": "", "Alamat": "",
             "Nama Item": "", "Harga Item (Rp)": "", "Qty": "", "Subtotal Item": "",
             "Total Transaksi (Rp)": grandTotal
         });
@@ -203,7 +204,7 @@ export const useLaporanPenjualan = () => {
                     }
                 }
 
-                if (R > 0 && (C === 7 || C === 9 || C === 10)) {
+                if (R > 0 && (C === 8 || C === 10 || C === 11)) {
                     cell.z = '#,##0'; 
                 }
                 
@@ -226,14 +227,15 @@ export const useLaporanPenjualan = () => {
             { wch: 15 },
             { wch: 20 },
             { wch: 15 },
-            { wch: 15 },
             { wch: 20 },
-            { wch: 15 },
-            { wch: 25 },
-            { wch: 15 },
-            { wch: 8 }, 
+            { wch: 20 },
             { wch: 20 },
             { wch: 25 },
+            { wch: 25 },
+            { wch: 15 }, 
+            { wch: 8 },
+            { wch: 15 },
+            { wch: 25 }
         ];
 
         const workbook = XLSX.utils.book_new();

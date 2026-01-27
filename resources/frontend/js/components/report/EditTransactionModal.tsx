@@ -16,6 +16,7 @@ import { getTransactionFormData } from '@/api/transaction';
 import { useUpdateTransaction } from '@/api/report/hooks';
 import { TransactionReportItem } from '@/types/reports/penjualan';
 import { toast } from '@/lib/swal';
+import { Textarea } from '../ui/textarea';
 
 interface EditTransactionModalProps {
     isOpen: boolean;
@@ -45,7 +46,8 @@ export function EditTransactionModal({ isOpen, onOpenChange, transaction }: Edit
         id_pembayaran: '',
         tanggal_beli: new Date(),
         nama_pembeli: '',
-        telp_pembeli: ''
+        telp_pembeli: '',
+        alamat: ''
     });
     
     const [cart, setCart] = useState<CartItem[]>([]);
@@ -66,7 +68,8 @@ export function EditTransactionModal({ isOpen, onOpenChange, transaction }: Edit
                 id_pembayaran: transaction.id_pembayaran.toString(),
                 tanggal_beli: parsedDate,
                 nama_pembeli: transaction.nama_pembeli || '',
-                telp_pembeli: transaction.telp_pembeli || ''
+                telp_pembeli: transaction.telp_pembeli || '',
+                alamat: transaction.alamat || ''
             });
 
             if (transaction.detail) {
@@ -140,6 +143,7 @@ export function EditTransactionModal({ isOpen, onOpenChange, transaction }: Edit
                 tanggal_beli: format(formData.tanggal_beli, 'dd-MM-yyyy'),
                 nama_pembeli: formData.nama_pembeli,
                 telp_pembeli: formData.telp_pembeli,
+                alamat: formData.alamat,
                 items: cart.map(c => ({
                     id_item: c.id_item,
                     kuantitas: c.qty,
@@ -215,6 +219,10 @@ export function EditTransactionModal({ isOpen, onOpenChange, transaction }: Edit
                             <div className="space-y-2">
                                 <Label>Telp</Label>
                                 <Input value={formData.telp_pembeli} onChange={(e) => setFormData({...formData, telp_pembeli: e.target.value})} />
+                            </div>
+                            <div className="space-y-2 col-span-2">
+                                <Label>Alamat</Label>
+                                <Textarea value={formData.alamat} onChange={(e) => setFormData({...formData, alamat: e.target.value})} />
                             </div>
                         </div>
 

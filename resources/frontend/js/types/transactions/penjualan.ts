@@ -35,6 +35,7 @@ export interface StoreTransactionPayload {
     tanggal_beli: string;
     nama_pembeli: string | null;
     telp_pembeli: string | null;
+    alamat: string | null;
     items: {
         id_item: number;
         kuantitas: number;

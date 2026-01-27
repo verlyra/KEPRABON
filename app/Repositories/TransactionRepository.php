@@ -12,7 +12,7 @@ class TransactionRepository
         return DB::select("SELECT * FROM TRX_PENJUALAN");
     }
 
-    public function storeTransaction(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool
+    public function storeTransaction(int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip, string|null $alamat): bool
     {
         DB::beginTransaction();
         try {
@@ -23,7 +23,8 @@ class TransactionRepository
                 'tanggal_beli' => Carbon::createFromFormat('d-m-Y', $tanggal_beli)->format('Y-m-d 00:00:00'),
                 'nama_pembeli' => $nama_pembeli,
                 'telp_pembeli' => $telp_pembeli,
-                'nip' => $nip
+                'nip' => $nip,
+                'alamat' => $alamat
             ]);
 
             foreach ($items as $item) {
@@ -57,6 +58,7 @@ class TransactionRepository
                 DATE_FORMAT(a.tanggal_beli, '%d-%m-%Y') as tanggal_beli, 
                 a.nama_pembeli, 
                 a.telp_pembeli,
+                a.alamat,
                 sum(e.kuantitas*e.harga) as total
             FROM trx_penjualan a 
             JOIN master_cabang b on a.id_cabang = b.id_cabang
@@ -101,18 +103,18 @@ class TransactionRepository
         );
     }
 
-    public function updateTransaction(int $id_penjualan, int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip): bool
+    public function updateTransaction(int $id_penjualan, int $id_cabang, int $id_tipe_penjualan, int $id_pembayaran, string $tanggal_beli, string|null $nama_pembeli, string|null $telp_pembeli, array $items, string $nip, string|null $alamat): bool
     {
         DB::beginTransaction();
         try {
             DB::update("
                 UPDATE TRX_PENJUALAN 
-                SET id_cabang = ?, id_tipe_penjualan = ?, id_pembayaran = ?, tanggal_beli = ?, nama_pembeli = ?, telp_pembeli = ?, nip = ? 
+                SET id_cabang = ?, id_tipe_penjualan = ?, id_pembayaran = ?, tanggal_beli = ?, nama_pembeli = ?, telp_pembeli = ?, nip = ?, alamat = ?
                 WHERE id_penjualan = ?
             ", [
                 $id_cabang, $id_tipe_penjualan, $id_pembayaran,
                 \Carbon\Carbon::createFromFormat('d-m-Y', $tanggal_beli)->format('Y-m-d 00:00:00'),
-                $nama_pembeli, $telp_pembeli, $nip, $id_penjualan
+                $nama_pembeli, $telp_pembeli, $nip, $alamat, $id_penjualan
             ]);
 
             DB::delete("DELETE FROM TRX_DETAIL_PENJUALAN WHERE id_penjualan = ?", [$id_penjualan]);
