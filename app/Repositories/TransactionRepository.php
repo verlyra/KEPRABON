@@ -76,7 +76,8 @@ class TransactionRepository
                 d.nama_pembayaran,
                 a.tanggal_beli,
                 a.nama_pembeli,
-                a.telp_pembeli",
+                a.telp_pembeli,
+                a.alamat",
             [$startDate, $endDate]
         );
 
