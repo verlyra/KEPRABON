@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['hmacValidator'])->group(function () {
+Route::middleware(['hmacValidator', 'log'])->group(function () {
 
     // base_url/api/auth/login
     Route::prefix('auth')->group(function () {
