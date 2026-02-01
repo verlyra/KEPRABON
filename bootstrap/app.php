@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'tokenValidator' => \App\Http\Middleware\ValidateApiToken::class,
             'hmacValidator' => \App\Http\Middleware\HmacMiddleware::class,
+            'log' => \App\Http\Middleware\LogMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
