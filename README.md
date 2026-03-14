@@ -61,7 +61,6 @@ cd KEPRABON
 Navigate to the backend folder and install dependencies.
 
 ```bash
-cd backend
 composer install
 ```
 
@@ -125,7 +124,6 @@ http://127.0.0.1:8000
 Navigate to the frontend directory:
 
 ```bash
-cd frontend
 npm install
 ```
 
@@ -166,17 +164,6 @@ Make sure the following tools are installed:
 * Node.js **≥ 18**
 * MySQL or MariaDB
 * Git
-
----
-
-### 📂 Project Structure
-
-```
-KEPRABON
-│
-├── backend        # Laravel REST API
-├── frontend       # React + TypeScript
-└── README.md
 
 ```
 
