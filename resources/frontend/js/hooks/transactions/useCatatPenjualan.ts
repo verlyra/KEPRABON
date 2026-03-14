@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { useGetTransactionForm, useStoreTransaction } from '@/api/transaction/hooks';
 import { CartItem } from '@/types/transactions/penjualan';
 import { jsPDF } from 'jspdf';
+import Logo from '@/assets/images/logo.png';``
 
 export const useCatatPenjualan = () => {
     const { data: formResource, isLoading, isError } = useGetTransactionForm();
@@ -138,66 +139,217 @@ export const useCatatPenjualan = () => {
         }
     };
 
-        const generateInvoicePdf = async (invoiceData: any) => {
-            try {
-                const doc = new jsPDF();
-                let y = 20;
-                doc.setFontSize(16);
-                doc.text('Invoice Penjualan', 14, y);
-                y += 10;
+    const generateInvoicePdf = async (invoiceData: any) => {
+    try {
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-                const invoiceNumber = invoiceData.invoiceNumber || `INV-${Date.now()}`;
-                doc.setFontSize(10);
-                doc.text(`No: ${invoiceNumber}`, 14, y);
-                doc.text(`Tanggal: ${invoiceData.tanggal || format(new Date(), 'dd-MM-yyyy')}`, 140, y);
-                y += 8;
+        const pageW = doc.internal.pageSize.getWidth();
+        const pageH = doc.internal.pageSize.getHeight();
+        const mL    = 14;
+        const mR    = 14;
+        const cW    = pageW - mL - mR;
 
-                doc.text(`Nama Pembeli: ${invoiceData.nama_pembeli || '-'}`, 14, y);
-                y += 6;
-                doc.text(`Telp: ${invoiceData.telp_pembeli || '-'}`, 14, y);
-                y += 6;
-                if (invoiceData.alamat) {
-                    doc.text(`Alamat: ${invoiceData.alamat}`, 14, y);
-                    y += 8;
-                } else {
-                    y += 2;
-                }
+        const fmt = (v: number) =>
+            new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
 
-                doc.text('------------------------------------------------------------', 14, y);
-                y += 6;
-                doc.text('Nama Item', 14, y);
-                doc.text('Qty', 100, y);
-                doc.text('Harga', 125, y);
-                doc.text('Subtotal', 160, y);
-                y += 6;
-                doc.text('------------------------------------------------------------', 14, y);
-                y += 6;
+        const BLACK: [number,number,number] = [0, 0, 0];
+        const GRAY:  [number,number,number] = [80, 80, 80];
 
-                const currency = (v: number) => new Intl.NumberFormat('id-ID').format(v);
-
-                invoiceData.items.forEach((it: any) => {
-                    const name = it.nama || it.id_item?.toString() || '-';
-                    doc.text(name, 14, y);
-                    doc.text(String(it.kuantitas || it.qty || 0), 100, y);
-                    doc.text(currency(Number(it.harga || it.transactionPrice || 0)), 125, y);
-                    const subtotal = Number(it.subtotal ?? (it.kuantitas || it.qty || 0) * (it.harga || it.transactionPrice || 0));
-                    doc.text(currency(subtotal), 160, y);
-                    y += 6;
-                    if (y > 270) { doc.addPage(); y = 20; }
-                });
-
-                y += 8;
-                doc.text('------------------------------------------------------------', 14, y);
-                y += 8;
-                doc.setFontSize(12);
-                doc.text(`Total: Rp ${currency(Number(invoiceData.total || 0))}`, 14, y);
-
-                doc.save(`${invoiceNumber}.pdf`);
-            } catch (err) {
-                console.error('PDF generation error', err);
-                toast.error('Gagal membuat invoice PDF.');
+        let logoDataUrl: string | null = null;
+        try {
+            const img = new Image();
+            img.src = Logo;
+            await new Promise<void>((resolve) => {
+                img.onload  = () => resolve();
+                img.onerror = () => resolve();
+                setTimeout(resolve, 3000);
+            });
+            if (img.naturalWidth > 0) {
+                const canvas = document.createElement('canvas');
+                canvas.width  = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                canvas.getContext('2d')!.drawImage(img, 0, 0);
+                logoDataUrl = canvas.toDataURL('image/png');
             }
+        } catch {}
+
+        const LOGO_SIZE  = 22;   
+        const LOGO_GAP   = 4;    
+        const headerTopY = 12;
+        let logoW = 0;
+        if (logoDataUrl) {
+            try {
+                const tmpImg = new Image();
+                tmpImg.src = logoDataUrl;
+                await new Promise<void>(res => {
+                    tmpImg.onload  = () => res();
+                    tmpImg.onerror = () => res();
+                });
+                const ratio = tmpImg.naturalWidth / tmpImg.naturalHeight;
+                logoW = Math.min(LOGO_SIZE * ratio, 30); // max 30mm lebar
+                doc.addImage(logoDataUrl, 'PNG', mL, headerTopY, logoW, LOGO_SIZE);
+            } catch { logoW = 0; }
+        }
+
+        const companyX = logoW > 0 ? mL + logoW + LOGO_GAP : mL;
+
+        let y = headerTopY + 2;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(...BLACK);
+        doc.text('Nasi Liwet Keprabon Bu Darmi', companyX, y);
+        y += 5.5;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...GRAY);
+        doc.text('CV. Yasa Piranti Dalem', companyX, y);       y += 5;
+        doc.text('Phone : +62217410689 and 7401966', companyX, y); y += 5;
+        doc.text('WA : +6281806306106 and +6281212735051', companyX, y); y += 5;
+
+        y = y + 2;
+
+        doc.setDrawColor(...GRAY);
+        doc.setLineWidth(0.2);
+        doc.setLineDashPattern([1, 1], 0);
+        doc.line(mL, y, pageW - mR, y);
+        doc.setLineDashPattern([], 0);
+        y += 6;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...GRAY);
+        doc.text('Customer', mL, y);
+        doc.text(':', mL + 22, y);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...BLACK);
+        doc.text(invoiceData.nama_pembeli || '-', mL + 25, y);
+
+        y += 5;
+
+        if (invoiceData.telp_pembeli || invoiceData.alamat) {
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(...GRAY);
+
+            const maxContactW = cW - 25;
+
+            if (invoiceData.telp_pembeli) {
+                doc.text(`${invoiceData.telp_pembeli}`, mL + 25, y);
+                y += 5;
+            }
+
+            if (invoiceData.alamat) {
+                const alamatLines: string[] = doc.splitTextToSize(
+                    invoiceData.alamat,
+                    maxContactW
+                );
+                alamatLines.forEach((line: string) => {
+                    doc.text(line, mL + 25, y);
+                    y += 5;
+                });
+            }
+        }
+
+        y += 5;
+
+        doc.setDrawColor(...GRAY);
+        doc.setLineWidth(0.2);
+        doc.setLineDashPattern([1, 1], 0);
+        doc.line(mL, y, pageW - mR, y);
+        doc.setLineDashPattern([], 0);
+        y += 6;
+
+        type Align = 'left' | 'center' | 'right';
+        interface ColDef { x: number; w: number; label: string; align: Align }
+
+        const cols: Record<string, ColDef> = {
+            no:       { x: mL,       w: 9,        label: 'No.',          align: 'center' },
+            nama:     { x: mL + 9,   w: 80,       label: 'Product',      align: 'left'   },
+            qty:      { x: mL + 89,  w: 18,       label: 'Jumlah',       align: 'center' },
+            harga:    { x: mL + 107, w: 38,       label: 'Harga Satuan', align: 'right'  },
+            subtotal: { x: mL + 145, w: cW - 145, label: 'Subtotal',     align: 'right'  },
         };
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...BLACK);
+
+        Object.values(cols).forEach(col => {
+            const tx =
+                col.align === 'right'  ? col.x + col.w - 1 :
+                col.align === 'center' ? col.x + col.w / 2 :
+                col.x;
+            doc.text(col.label, tx, y, { align: col.align });
+        });
+
+        y += 2;
+
+        doc.setDrawColor(...BLACK);
+        doc.setLineWidth(0.4);
+        doc.line(mL, y, pageW - mR, y);
+        y += 5;
+
+        const rowH = 6.5;
+
+        invoiceData.items.forEach((item: any, idx: number) => {
+            if (y + rowH > pageH - 40) {
+                doc.addPage();
+                y = 16;
+            }
+
+            const qty      = Number(item.kuantitas ?? item.qty ?? 0);
+            const harga    = Number(item.harga ?? item.transactionPrice ?? 0);
+            const subtotal = Number(item.subtotal ?? qty * harga);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            doc.setTextColor(...BLACK);
+
+            doc.text(String(idx + 1),
+                cols.no.x + cols.no.w / 2, y, { align: 'center' });
+            doc.text(
+                doc.splitTextToSize(item.nama || '-', cols.nama.w - 2)[0],
+                cols.nama.x, y);
+            doc.text(String(qty),
+                cols.qty.x + cols.qty.w / 2, y, { align: 'center' });
+            doc.text(fmt(harga),
+                cols.harga.x + cols.harga.w - 1, y, { align: 'right' });
+            doc.text(fmt(subtotal),
+                cols.subtotal.x + cols.subtotal.w - 1, y, { align: 'right' });
+
+            y += rowH;
+        });
+
+        doc.setDrawColor(...GRAY);
+        doc.setLineWidth(0.3);
+        doc.setLineDashPattern([1, 1], 0);
+        doc.line(mL, y, pageW - mR, y);
+        doc.setLineDashPattern([], 0);
+        y += 6;
+
+        const grandTotal  = Number(invoiceData.total || 0);
+        const sumLabelX   = pageW - mR - 60;
+        const sumValX     = pageW - mR;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(...BLACK);
+        doc.text('Total', sumLabelX, y);
+        doc.text(fmt(grandTotal), sumValX, y, { align: 'right' });
+
+        doc.setDrawColor(...BLACK);
+        doc.setLineWidth(0.5);
+        doc.line(sumLabelX, y + 3,   sumValX, y + 3);
+        doc.line(sumLabelX, y + 4.5, sumValX, y + 4.5);
+
+        doc.save(`${invoiceData.invoiceNumber}.pdf`);
+
+    } catch (err) {
+        console.error('PDF generation error', err);
+        toast.error('Gagal membuat invoice PDF.');
+    }
+};
 
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
 
