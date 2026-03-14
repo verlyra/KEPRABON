@@ -3,6 +3,7 @@ import { toast } from '@/lib/swal';
 import { format } from 'date-fns';
 import { useGetTransactionForm, useStoreTransaction } from '@/api/transaction/hooks';
 import { CartItem } from '@/types/transactions/penjualan';
+import { jsPDF } from 'jspdf';
 
 export const useCatatPenjualan = () => {
     const { data: formResource, isLoading, isError } = useGetTransactionForm();
@@ -90,7 +91,7 @@ export const useCatatPenjualan = () => {
         }
 
         try {
-            await storeMutation.mutateAsync({
+            const result = await storeMutation.mutateAsync({
                 id_cabang: parseInt(formData.id_cabang),
                 id_tipe_penjualan: parseInt(formData.id_tipe_penjualan),
                 id_pembayaran: parseInt(formData.id_pembayaran),
@@ -103,6 +104,23 @@ export const useCatatPenjualan = () => {
                     kuantitas: item.qty,
                     harga: item.transactionPrice
                 }))
+            });
+
+            // build invoice payload (generate local invoice number)
+            await generateInvoicePdf({
+                invoiceNumber: `INV-${Date.now()}`,
+                tanggal: format(formData.tanggal_beli, 'dd-MM-yyyy'),
+                nama_pembeli: formData.nama_pembeli.trim() === '' ? null : formData.nama_pembeli,
+                telp_pembeli: formData.telp_pembeli.trim() === '' ? null : formData.telp_pembeli,
+                alamat: formData.alamat.trim() === '' ? null : formData.alamat,
+                items: cart.map(item => ({
+                    id_item: item.id,
+                    nama: item.nama,
+                    kuantitas: item.qty,
+                    harga: item.transactionPrice,
+                    subtotal: item.subtotal
+                })),
+                total: grandTotal
             });
 
             toast.success("Transaksi berhasil disimpan!");
@@ -119,6 +137,67 @@ export const useCatatPenjualan = () => {
             toast.error("Gagal menyimpan transaksi.");
         }
     };
+
+        const generateInvoicePdf = async (invoiceData: any) => {
+            try {
+                const doc = new jsPDF();
+                let y = 20;
+                doc.setFontSize(16);
+                doc.text('Invoice Penjualan', 14, y);
+                y += 10;
+
+                const invoiceNumber = invoiceData.invoiceNumber || `INV-${Date.now()}`;
+                doc.setFontSize(10);
+                doc.text(`No: ${invoiceNumber}`, 14, y);
+                doc.text(`Tanggal: ${invoiceData.tanggal || format(new Date(), 'dd-MM-yyyy')}`, 140, y);
+                y += 8;
+
+                doc.text(`Nama Pembeli: ${invoiceData.nama_pembeli || '-'}`, 14, y);
+                y += 6;
+                doc.text(`Telp: ${invoiceData.telp_pembeli || '-'}`, 14, y);
+                y += 6;
+                if (invoiceData.alamat) {
+                    doc.text(`Alamat: ${invoiceData.alamat}`, 14, y);
+                    y += 8;
+                } else {
+                    y += 2;
+                }
+
+                doc.text('------------------------------------------------------------', 14, y);
+                y += 6;
+                doc.text('Nama Item', 14, y);
+                doc.text('Qty', 100, y);
+                doc.text('Harga', 125, y);
+                doc.text('Subtotal', 160, y);
+                y += 6;
+                doc.text('------------------------------------------------------------', 14, y);
+                y += 6;
+
+                const currency = (v: number) => new Intl.NumberFormat('id-ID').format(v);
+
+                invoiceData.items.forEach((it: any) => {
+                    const name = it.nama || it.id_item?.toString() || '-';
+                    doc.text(name, 14, y);
+                    doc.text(String(it.kuantitas || it.qty || 0), 100, y);
+                    doc.text(currency(Number(it.harga || it.transactionPrice || 0)), 125, y);
+                    const subtotal = Number(it.subtotal ?? (it.kuantitas || it.qty || 0) * (it.harga || it.transactionPrice || 0));
+                    doc.text(currency(subtotal), 160, y);
+                    y += 6;
+                    if (y > 270) { doc.addPage(); y = 20; }
+                });
+
+                y += 8;
+                doc.text('------------------------------------------------------------', 14, y);
+                y += 8;
+                doc.setFontSize(12);
+                doc.text(`Total: Rp ${currency(Number(invoiceData.total || 0))}`, 14, y);
+
+                doc.save(`${invoiceNumber}.pdf`);
+            } catch (err) {
+                console.error('PDF generation error', err);
+                toast.error('Gagal membuat invoice PDF.');
+            }
+        };
 
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
 
