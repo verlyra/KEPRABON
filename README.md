@@ -48,7 +48,7 @@ Ensure the following tools are installed on your system:
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/DandyYahmin/KEPRABON.git
+git clone https://github.com/verlyra/KEPRABON.git
 cd KEPRABON
 ```
 
@@ -134,5 +134,3 @@ After that, the URL where the system is running will appear, and users in the sa
 
 - If you encounter issues with database migrations, ensure your MySQL server is running and the credentials in `.env` are correct.
 - For production deployment, configure environment variables and use a production-ready server like Nginx or Apache.
-- If you experience difficulties, don't be embarrassed to contact me
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin)](https://www.linkedin.com/in/dandydarmawanalyahmin)
